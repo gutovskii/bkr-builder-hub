@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+      "lib": ["es5", "es6", "dom"],
+      "outDir": "./dist/",
+      "sourceMap": true,
+      "noImplicitAny": true,
+      "module": "commonjs",
+      "target": "es6",
+      "moduleResolution": "node",
+      "esModuleInterop": true,
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true
+    },
+    "ts-node": {
+      "esm": true,
+      "transpileOnly": true
+    },
+    "include": [
+      "./src/**/*.ts"
+    ]
+  }

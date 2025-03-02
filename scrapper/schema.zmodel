@@ -1,0 +1,222 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model UserEntity {
+    id String @id @default(uuid())
+
+    nickname String @unique
+    email String @unique
+    isAdmin Boolean @default(false)
+
+    savedComponents BaseComponent[]
+    savedBuilds BuildEntity[]
+
+    @@allow('all', true)
+}
+
+model BuildEntity {
+    id String @id @default(uuid())
+
+    name String
+    rating Float @default(0)
+    likes Int @default(0)
+
+    user UserEntity @relation(fields: [userId], references: [id])
+    userId String
+
+    motherBoard MotherboardComponent? @relation(fields: [motherBoardId], references: [id])
+    motherBoardId String?
+    cpu CpuComponent? @relation(fields: [cpuId], references: [id])
+    cpuId String?
+    ssds SsdComponent[]
+    hdds HddComponent[]
+    memories MemoryComponent[]
+    videoCards VideoCardComponent[]
+    coolers CoolerComponent[]
+    powerSupplies PowerSupplyComponent[]
+    cases CaseComponent[]
+
+    @@allow('all', true)
+}
+
+model ComponentInMarketplaces {
+    id String @id @default(uuid())
+    
+    name String
+    marketplaceName String
+    price Int?
+    rating Float?
+    warranty String?
+    URL String
+
+    componentUnifiedName String
+
+    createdAt DateTime @default(now()) @db.Timestamptz
+
+    @@allow('all', true)
+}
+
+model ArchivedComponentInMarketplaces {
+    id String @id @default(uuid())
+
+    marketplaceName String
+    price Int?
+    rating Float?
+    warranty String?
+    URL String
+
+    componentUnifiedName String
+
+    createdAt DateTime @default(now()) @db.Timestamptz
+
+    @@allow('all', true)
+}
+
+model BaseComponent {
+    id String @id @default(uuid())
+    
+    componentUnifiedName String @unique
+    componentType String
+
+    lowestPrice Int?
+    highestRating Float @default(0)
+    warranty String?
+
+    isNotAvailableCandidate Boolean @default(false)
+    isNotAvailable Boolean @default(false)
+
+    updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz
+
+    users UserEntity[]
+
+    @@delegate(componentType)
+    @@allow('all', true)
+}
+
+model CaseComponent extends BaseComponent {
+    color String?
+    maxVideoCardLength String?
+    motherBoardFormFactors String?
+    physicalDimensions String?
+    maxCoolerHeight String?
+    expansionSlots String?
+    caseType String?
+    material String?
+
+    builds BuildEntity[]
+}
+
+model CoolerComponent extends BaseComponent {
+    size String?
+    weight String?
+    maxNoiseLevel String?
+    socker String?
+    color String?
+    ratedVoltage String?
+
+    builds BuildEntity[]
+}
+
+model CpuComponent extends BaseComponent {
+    manufacturer String?
+    series String?
+    processorGeneration String?
+    socket String?
+    coreCount String?
+    threadCount String?
+    tpd String?
+    maxSupportedMemory String?
+    lithografy String?
+
+    builds BuildEntity[]
+}
+
+model HddComponent extends BaseComponent {
+    serias String?
+    formFactor String?
+    maxRotationSpeed String?
+    weight String?
+    physicalDimensions String?
+    noiseLevel String?
+    compatability String?
+    color String?
+    connectionInterface String?
+    writingTechnology String?
+
+    builds BuildEntity[]
+}
+
+model MemoryComponent extends BaseComponent {
+    memoryType String?
+    memoryFrequence String?
+    volume String?
+    numberOfSlots String?
+    formFactor String?
+    effectiveThroughput String?
+    
+    builds BuildEntity[]
+}
+
+model MotherboardComponent extends BaseComponent {
+    manufacturer String?
+    socker String?
+    formFactor String?
+    chipset String?
+    memoryType String?
+    memoryMax String?
+    memorySlots String?
+    physicalDimensions String?
+    maxFrequencyOfRAM String?
+    
+    builds BuildEntity[]
+}
+
+model PowerSupplyComponent extends BaseComponent {
+    formFactor String?
+    weight String?
+    power String?
+    physicalDimensions String?
+    specification String?
+    
+    builds BuildEntity[]
+}
+
+model SsdComponent extends BaseComponent {
+    volume String?
+    serias String?
+    readingSpeed String?
+    writingSpeed String?
+    connectionInterface String?
+    physicalDimensions String?
+    formFactor String?
+    weight String?
+    compatability String?
+    
+    builds BuildEntity[]
+}
+
+model VideoCardComponent extends BaseComponent {
+    volume String?
+    memoryType String?
+    color String?
+    chipset String?
+    connectionInterface String?
+    bitCapacityOfTheMemoryBus String?
+    memoryFrequency String?
+    coreFrequency String?
+    connectors String?
+    
+    builds BuildEntity[]
+}
