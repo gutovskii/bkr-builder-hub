@@ -112,7 +112,7 @@ export class ZhukCpuComponentScrapper
 
                     const componentUnifiedData = await prisma.cpuComponent.findFirst({
                         where: {
-                            componentUnifiedName: scrappedComponent.name
+                            componentUnifiedName: dbComponentInMarketplace.componentUnifiedName
                         }
                     });
 
@@ -131,9 +131,11 @@ export class ZhukCpuComponentScrapper
                     }
 
                     if (toUpdateUnifiedData) {
+                        const { id, componentType, ...componentUnifiedDataToUpdate } = componentUnifiedData;
+
                         await prisma.cpuComponent.update({
                             where: { id: componentUnifiedData.id },
-                            data: componentUnifiedData
+                            data: componentUnifiedDataToUpdate,
                         });
                     }
                 }
@@ -172,6 +174,9 @@ export class ZhukCpuComponentScrapper
             }, listPageBody);
 
             pageNumber++;
+
+            // remove
+            if (pageNumber === 5) hasNext = false;
         }
 
         await listPage.close();

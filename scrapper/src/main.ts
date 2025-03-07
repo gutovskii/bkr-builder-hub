@@ -4,7 +4,8 @@ import { AbstractMarketplacesScrapper, BuilderHubScrapper, TouchScrapper, ZhukSc
 export const MARKETPLACES_COUNT = 2;
 
 async function main() {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({ headless: true, timeout: 0 });
+
     const page = await browser.newPage();
 
     const marketplacesScrappers: AbstractMarketplacesScrapper[] = [

@@ -24,7 +24,7 @@ export class TouchCpuComponentScrapper
         while (hasNext) {
             const componentsPageUrl = `${this.componentBaseUrl}${pageNumber}`;
 
-            await listPage.goto(componentsPageUrl);
+            await listPage.goto(componentsPageUrl, { waitUntil: 'domcontentloaded' });
 
             const listPageBody = await listPage.$('body');
             const componentsHrefs = await listPage.evaluate(b => {
@@ -39,7 +39,7 @@ export class TouchCpuComponentScrapper
 
                 const componentUrl = this.baseUrl + componentHref;
 
-                await this.componentPage.goto(componentUrl);
+                await this.componentPage.goto(componentUrl, {  waitUntil: 'domcontentloaded' });
 
                 const scrappedComponent = await (await this.componentPage.$('body')).evaluate(b => {
                     const name = b.querySelector('.item_name').textContent.trim();
@@ -126,9 +126,11 @@ export class TouchCpuComponentScrapper
                     }
 
                     if (toUpdateUnifiedData) {
+                        const { id, componentType, ...componentUnifiedDataToUpdate } = componentUnifiedData;
+
                         await prisma.cpuComponent.update({
                             where: { id: componentUnifiedData.id },
-                            data: componentUnifiedData
+                            data: componentUnifiedDataToUpdate,
                         });
                     }
                 }
@@ -162,11 +164,14 @@ export class TouchCpuComponentScrapper
             }
 
             hasNext = await listPage.evaluate(b => {
-                const canBtnGoNext = b.querySelector('.bx-pag-next a').attributes.getNamedItem('onclick');
+                const canBtnGoNext = b.querySelector('.bx-pag-next a')
                 return Boolean(b && canBtnGoNext);
             }, listPageBody);
 
             pageNumber++;
+
+            // remove
+            if (pageNumber === 5) hasNext = false;
         }
 
         await listPage.close();
