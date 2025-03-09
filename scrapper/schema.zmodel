@@ -106,7 +106,6 @@ model BaseComponent {
 }
 
 model CaseComponent extends BaseComponent {
-    color String?
     maxVideoCardLength String?
     motherBoardFormFactors String?
     physicalDimensions String?
@@ -119,12 +118,11 @@ model CaseComponent extends BaseComponent {
 }
 
 model CoolerComponent extends BaseComponent {
-    size String?
+    sizes String?
     weight String?
     maxNoiseLevel String?
-    socker String?
-    color String?
-    ratedVoltage String?
+    socket String?
+    tdp String?
 
     builds BuildEntity[]
 }
@@ -151,7 +149,6 @@ model HddComponent extends BaseComponent {
     physicalDimensions String?
     noiseLevel String?
     compatability String?
-    color String?
     connectionInterface String?
     writingTechnology String?
 
@@ -163,15 +160,14 @@ model MemoryComponent extends BaseComponent {
     memoryFrequence String?
     volume String?
     numberOfSlots String?
-    formFactor String?
-    effectiveThroughput String?
+    timingsSchema String?
     
     builds BuildEntity[]
 }
 
 model MotherboardComponent extends BaseComponent {
     manufacturer String?
-    socker String?
+    socket String?
     formFactor String?
     chipset String?
     memoryType String?
@@ -194,6 +190,7 @@ model PowerSupplyComponent extends BaseComponent {
 }
 
 model SsdComponent extends BaseComponent {
+    manufacturer String?
     volume String?
     serias String?
     readingSpeed String?
@@ -202,7 +199,6 @@ model SsdComponent extends BaseComponent {
     physicalDimensions String?
     formFactor String?
     weight String?
-    compatability String?
     
     builds BuildEntity[]
 }
@@ -210,7 +206,6 @@ model SsdComponent extends BaseComponent {
 model VideoCardComponent extends BaseComponent {
     volume String?
     memoryType String?
-    color String?
     chipset String?
     connectionInterface String?
     bitCapacityOfTheMemoryBus String?

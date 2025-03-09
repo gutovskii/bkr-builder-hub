@@ -88,7 +88,6 @@ model BaseComponent {
 
 model CaseComponent {
   id                         String        @id()
-  color                      String?
   maxVideoCardLength         String?
   motherBoardFormFactors     String?
   physicalDimensions         String?
@@ -102,12 +101,11 @@ model CaseComponent {
 
 model CoolerComponent {
   id                         String        @id()
-  size                       String?
+  sizes                      String?
   weight                     String?
   maxNoiseLevel              String?
-  socker                     String?
-  color                      String?
-  ratedVoltage               String?
+  socket                     String?
+  tdp                        String?
   builds                     BuildEntity[]
   delegate_aux_baseComponent BaseComponent @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
@@ -136,7 +134,6 @@ model HddComponent {
   physicalDimensions         String?
   noiseLevel                 String?
   compatability              String?
-  color                      String?
   connectionInterface        String?
   writingTechnology          String?
   builds                     BuildEntity[]
@@ -149,8 +146,7 @@ model MemoryComponent {
   memoryFrequence            String?
   volume                     String?
   numberOfSlots              String?
-  formFactor                 String?
-  effectiveThroughput        String?
+  timingsSchema              String?
   builds                     BuildEntity[]
   delegate_aux_baseComponent BaseComponent @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
@@ -158,7 +154,7 @@ model MemoryComponent {
 model MotherboardComponent {
   id                         String        @id()
   manufacturer               String?
-  socker                     String?
+  socket                     String?
   formFactor                 String?
   chipset                    String?
   memoryType                 String?
@@ -183,6 +179,7 @@ model PowerSupplyComponent {
 
 model SsdComponent {
   id                         String        @id()
+  manufacturer               String?
   volume                     String?
   serias                     String?
   readingSpeed               String?
@@ -191,7 +188,6 @@ model SsdComponent {
   physicalDimensions         String?
   formFactor                 String?
   weight                     String?
-  compatability              String?
   builds                     BuildEntity[]
   delegate_aux_baseComponent BaseComponent @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
@@ -200,7 +196,6 @@ model VideoCardComponent {
   id                         String        @id()
   volume                     String?
   memoryType                 String?
-  color                      String?
   chipset                    String?
   connectionInterface        String?
   bitCapacityOfTheMemoryBus  String?
