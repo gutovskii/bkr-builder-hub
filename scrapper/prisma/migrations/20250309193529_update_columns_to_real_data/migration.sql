@@ -14,14 +14,6 @@
   - You are about to drop the column `color` on the `VideoCardComponent` table. All the data in the column will be lost.
 
 */
--- DropIndex
-DROP INDEX "archived_component_in_marketplaces_unified_name_trgm";
-
--- DropIndex
-DROP INDEX "base_component_unified_name_trgm";
-
--- DropIndex
-DROP INDEX "component_in_marketplaces_unified_name_trgm";
 
 -- AlterTable
 ALTER TABLE "CaseComponent" DROP COLUMN "color";

@@ -11,6 +11,10 @@ export type PaginationConfig<TModel> = {
     getComponentsPageUrl: (pageNumber: number) => string,
     getComponentsHrefs: (listPageBody: ElementHandle<HTMLBodyElement>) => Promise<string[]>,
     getHasNext: (listPageBody: ElementHandle<HTMLBodyElement>) => Promise<boolean>,
+    getScrappedData: (
+        componentPageBody: ElementHandle<HTMLBodyElement>,
+        getAdditionalData: (characteristics: Map<string, string>, name: string, price: number) => Record<string, string | number>,
+    ) => Promise<any>,
     getAdditionalData: (characteristics: Map<string, string>, name: string, price: number) => Record<string, string | number>,
 }
 
@@ -28,6 +32,7 @@ export async function paginateScrapping<
         getComponentsPageUrl,
         getComponentsHrefs,
         getHasNext,
+        getScrappedData,
         getAdditionalData,
     }: PaginationConfig<TModel>
 ) {
@@ -56,41 +61,10 @@ export async function paginateScrapping<
 
             await componentPage.goto(componentUrl);
 
-            const scrappedComponent = await (await componentPage.$('body')).evaluate((b, getAdditionalData) => {
-                const name = b.querySelector('.product-title').textContent.trim();
-                const price = parseInt(b.querySelector('.product-price__item').textContent.trim().replace(/[^\d]/g, ""), 10);
-
-                if (price === 0) {
-                    return null;
-                }
-
-                const rows = b.querySelectorAll('.product-features__row');
-                let characteristics = new Map<string, string>();
-
-                rows.forEach(row => {
-                    const nameElement = row.querySelector('.product-features__cell:first-child');
-                    const valueElement = row.querySelector('.product-features__cell:last-child');
-
-                    if (nameElement && valueElement) {
-                        characteristics.set(
-                            nameElement.textContent.trim(),
-                            valueElement.textContent.trim(),
-                        );
-                    }
-                });
-
-                const basicData = {
-                    name,
-                    price,
-                    rating: 0, // Todo: add rating somehow
-                    warranty: characteristics.get("Гарантія"),
-                }
-
-                return {
-                    ...basicData,
-                    ...getAdditionalData(characteristics, name, price),
-                }
-            }, getAdditionalData);
+            const scrappedComponent = await getScrappedData(
+                await componentPage.$('body'), 
+                getAdditionalData
+            );
         
             const dbComponentInMarketplace = await prisma.componentInMarketplaces.findFirst({
                 where: {

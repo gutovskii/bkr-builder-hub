@@ -23,5 +23,46 @@ export function getZhukPaginationConfig<TModel>(baseUrl: string, componentPage: 
                 return Boolean(b && canBtnGoNext);
             })
         },
+        getScrappedData(componentPageBody, getAdditionalData) {
+            return componentPageBody.evaluate((b, getAdditionalData) => {
+                const name = b.querySelector('.product-title').textContent.trim();
+                const price = parseInt(b.querySelector('.product-price__item').textContent.trim().replace(/[^\d]/g, ""), 10);
+                const imgUrls = Array.from(
+                    document.querySelectorAll('.gallery__photos-list span img')
+                ).map(a => document.location.origin + a.attributes.getNamedItem('src').textContent);
+
+                if (price === 0) {
+                    return null;
+                }
+
+                const rows = b.querySelectorAll('.product-features__row');
+                let characteristics = new Map<string, string>();
+
+                rows.forEach(row => {
+                    const nameElement = row.querySelector('.product-features__cell:first-child');
+                    const valueElement = row.querySelector('.product-features__cell:last-child');
+
+                    if (nameElement && valueElement) {
+                        characteristics.set(
+                            nameElement.textContent.trim(),
+                            valueElement.textContent.trim(),
+                        );
+                    }
+                });
+
+                const basicData = {
+                    name,
+                    price,
+                    imgUrls,
+                    rating: 0, // Todo: add rating somehow
+                    warranty: characteristics.get("Гарантія"),
+                }
+
+                return {
+                    ...basicData,
+                    ...getAdditionalData(characteristics, name, price),
+                }
+            }, getAdditionalData);
+        }
     }
 }

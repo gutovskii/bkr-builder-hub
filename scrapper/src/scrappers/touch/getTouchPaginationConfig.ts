@@ -23,5 +23,47 @@ export function getTouchPaginationConfig<TModel>(baseUrl: string, componentPage:
                 return Boolean(b && canBtnGoNext);
             })
         },
+        getScrappedData(componentPageBody, getAdditionalData) {
+            return componentPageBody.evaluate((b, getAdditionalData) => {
+                const name = b.querySelector('.changeName').textContent.trim();
+                const price = parseInt(b.querySelector('.changePrice').textContent.trim().replace(/[^\d]/g, ""), 10);
+                const imgUrls = Array.from(
+                    document.querySelectorAll('.pictureSlider div a')
+                ).map(a => document.location.origin + a.attributes.getNamedItem('href').textContent);
+
+                if (price === 0) {
+                    return null;
+                }
+
+                const rows = b.querySelectorAll('tr.row_gray, tr.row_white');
+                
+                let characteristics = new Map<string, string>();
+
+                rows.forEach(row => {
+                    const nameElement = row.querySelector('.cell_name span');
+                    const valueElement = row.querySelector('.cell_value span');
+
+                    if (nameElement && valueElement) {
+                        characteristics.set(
+                            nameElement.textContent.trim(),
+                            valueElement.textContent.trim(),
+                        );
+                    }
+                });
+
+                const basicData = {
+                    name,
+                    price,
+                    imgUrls,
+                    rating: 0,
+                    warrany: characteristics.get('Гарантійний термін')
+                }
+
+                return {
+                    ...basicData,
+                    ...getAdditionalData(characteristics, name, price),
+                };
+            }, getAdditionalData);
+        },
     }
 }
