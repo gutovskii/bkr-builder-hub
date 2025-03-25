@@ -15,7 +15,7 @@ export class TouchHddComponentScrapper
 
     async runPaginationScrapping(): Promise<void> {
         await paginateScrapping({
-            ...getTouchPaginationConfig(this.baseUrl, this.componentPage),
+            ...getTouchPaginationConfig(this.baseUrl, this.componentBaseUrl, this.componentPage),
             dbModel: 'hddComponent',
             getAdditionalData: (characteristics) => {
                 return {
@@ -27,6 +27,7 @@ export class TouchHddComponentScrapper
                     connectionInterface: characteristics.get("Інтерфейс підключення"),
                     writingTechnology: characteristics.get("Технологія запису"),
                     formFactor: characteristics.get("Форм-фактор"),
+                    volume: characteristics.get("Об'єм накопичувача"),
                     // serias, compatability
                 };
             },

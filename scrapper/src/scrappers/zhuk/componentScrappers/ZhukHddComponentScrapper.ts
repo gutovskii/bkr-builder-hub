@@ -15,9 +15,9 @@ export class ZhukHddComponentScrapper
 
     async runPaginationScrapping(): Promise<void> {
         await paginateScrapping({
-            ...getZhukPaginationConfig(this.baseUrl, this.componentPage),
+            ...getZhukPaginationConfig(this.baseUrl, this.componentBaseUrl, this.componentPage),
             dbModel: 'hddComponent',
-            getAdditionalData(characteristics, name) {
+            getAdditionalData: (characteristics, name) => {
                 return {
                     manufacturer: name.split(' ')[1],
                     warranty: characteristics.get("Гарантія"),
@@ -28,6 +28,7 @@ export class ZhukHddComponentScrapper
                     noiseLevel: characteristics.get("Максимальний рівень шуму"),
                     connectionInterface: characteristics.get("Інтерфейс"),
                     writingTechnology: characteristics.get("Тип конектора живлення"),
+                    volume: characteristics.get("Місткість накопичувача"),
                     // serias
                 };
             },

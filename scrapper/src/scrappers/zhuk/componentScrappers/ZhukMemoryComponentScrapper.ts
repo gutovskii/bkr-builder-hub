@@ -15,14 +15,14 @@ export class ZhukMemoryComponentScrapper
 
     async runPaginationScrapping(): Promise<void> {
         await paginateScrapping({
-            ...getZhukPaginationConfig(this.baseUrl, this.componentPage),
+            ...getZhukPaginationConfig(this.baseUrl, this.componentBaseUrl, this.componentPage),
             dbModel: 'memoryComponent',
-            getAdditionalData(characteristics, name) {
+            getAdditionalData: (characteristics, name) => {
                 return {
                     manufacturer: name.split(' ')[1],
                     warranty: characteristics.get("Гарантія"),
                     memoryType: characteristics.get("Тип пам'яті"),
-                    memoryFrequency: characteristics.get("Частота пам'яті"),
+                    memoryFrequence: characteristics.get("Частота пам'яті"),
                     volume: characteristics.get("Обсяг пам'яті"),
                     numberOfSlots: characteristics.get("Кількість планок"),
                     timingsSchema: characteristics.get("Схема таймінгів пам'яті"),

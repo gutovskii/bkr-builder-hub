@@ -15,7 +15,7 @@ export class TouchMotherboardComponentScrapper
 
     async runPaginationScrapping(): Promise<void> {
         await paginateScrapping({
-            ...getTouchPaginationConfig(this.baseUrl, this.componentPage),
+            ...getTouchPaginationConfig(this.baseUrl, this.componentBaseUrl, this.componentPage),
             dbModel: 'motherboardComponent',
             getAdditionalData: (characteristics) => {
                 return {

@@ -1,7 +1,7 @@
 import { Page } from "puppeteer";
 import { AbstractZhukComponentScrapper } from "../AbstractZhukComponentScrapper";
 import { paginateScrapping } from "../../../common/paginateScrapping";
-import { getTouchPaginationConfig } from "../../touch";
+import { getZhukPaginationConfig } from "../getZhukPaginationConfig";
 
 export class ZhukSsdComponentScrapper
     extends AbstractZhukComponentScrapper {
@@ -15,9 +15,9 @@ export class ZhukSsdComponentScrapper
 
     async runPaginationScrapping(): Promise<void> {
         await paginateScrapping({
-            ...getTouchPaginationConfig(this.baseUrl, this.componentPage),
+            ...getZhukPaginationConfig(this.baseUrl, this.componentBaseUrl, this.componentPage),
             dbModel: 'ssdComponent',
-            getAdditionalData(characteristics, name) {
+            getAdditionalData: (characteristics, name) => {
                 return {
                     manufacturer: name.split(' ')[1],
                     warranty: characteristics.get('Гарантія'),

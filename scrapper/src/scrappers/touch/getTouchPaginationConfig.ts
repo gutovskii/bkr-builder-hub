@@ -3,32 +3,32 @@ import { MarketplacePaginationConfig } from "../../common/paginateScrapping";
 import { prisma } from "../../prisma";
 import { TouchConsts } from "./AbstractTouchComponentScrapper";
 
-export function getTouchPaginationConfig<TModel>(baseUrl: string, componentPage: Page): MarketplacePaginationConfig<TModel> {
+export function getTouchPaginationConfig<TModel>(baseUrl: string, componentPageUrl: string, componentPage: Page): MarketplacePaginationConfig<TModel> {
     return {
         marketplaceName: TouchConsts.TOUCH_NAME,
         prisma: prisma,
         baseUrl,
         componentPage,
         getComponentsPageUrl: (pageNumber: number) => {
-            return pageNumber === 1 ? this.componentBaseUrl : `${this.componentBaseUrl}filter/page=${pageNumber}/`;
+            return componentPageUrl + pageNumber;
         },
         getComponentsHrefs(listPageBody) {
             return listPageBody.evaluate(b => {
-                return Array.from(b.querySelectorAll('.catalogGrid.catalog-grid li meta:last-child')).map((meta: any) => meta.content);
-            })
+                return Array.from(b.querySelectorAll('.items.productList .tabloid .name')).map(el => el.getAttribute('href'));
+            });
         },
         getHasNext(listPageBody) {
             return listPageBody.evaluate(b => {
-                const canBtnGoNext = !b.querySelector('.pager__item--forth').classList.contains('is-disabled');
+                const canBtnGoNext = b.querySelector('.bx-pag-next a')?.attributes?.getNamedItem('onclick');
                 return Boolean(b && canBtnGoNext);
-            })
+            });
         },
-        getScrappedData(componentPageBody, getAdditionalData) {
-            return componentPageBody.evaluate((b, getAdditionalData) => {
+        getScrappedData(componentPageBody, getAdditionalDataStr) {
+            return componentPageBody.evaluate((b, getAdditionalDataStr) => {
                 const name = b.querySelector('.changeName').textContent.trim();
                 const price = parseInt(b.querySelector('.changePrice').textContent.trim().replace(/[^\d]/g, ""), 10);
                 const imgUrls = Array.from(
-                    document.querySelectorAll('.pictureSlider div a')
+                    b.querySelectorAll('.pictureSlider div a')
                 ).map(a => document.location.origin + a.attributes.getNamedItem('href').textContent);
 
                 if (price === 0) {
@@ -40,8 +40,8 @@ export function getTouchPaginationConfig<TModel>(baseUrl: string, componentPage:
                 let characteristics = new Map<string, string>();
 
                 rows.forEach(row => {
-                    const nameElement = row.querySelector('.cell_name span');
-                    const valueElement = row.querySelector('.cell_value span');
+                    const nameElement = row.querySelector('.cell_name');
+                    const valueElement = row.querySelector('.cell_value');
 
                     if (nameElement && valueElement) {
                         characteristics.set(
@@ -55,15 +55,18 @@ export function getTouchPaginationConfig<TModel>(baseUrl: string, componentPage:
                     name,
                     price,
                     imgUrls,
-                    rating: 0,
-                    warrany: characteristics.get('Гарантійний термін')
-                }
+                    rating: 0, // Todo: add rating somehow
+                    warranty: characteristics.get('Гарантійний термін'),
+                };
+
+                const getAdditionalData = new Function("return " + getAdditionalDataStr)();
 
                 return {
                     ...basicData,
                     ...getAdditionalData(characteristics, name, price),
+                    jsonCharacteristics: JSON.stringify(getAdditionalData(characteristics, name, price)), // todo: wtf,
                 };
-            }, getAdditionalData);
+            }, getAdditionalDataStr);
         },
     }
 }

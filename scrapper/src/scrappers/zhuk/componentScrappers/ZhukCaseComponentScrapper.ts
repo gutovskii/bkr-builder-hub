@@ -15,16 +15,15 @@ export class ZhukCaseComponentScrapper
 
     async runPaginationScrapping(): Promise<void> {
         await paginateScrapping({
-            ...getZhukPaginationConfig(this.baseUrl, this.componentPage),
+            ...getZhukPaginationConfig(this.baseUrl, this.componentBaseUrl, this.componentPage),
             dbModel: 'caseComponent',
-            getAdditionalData(characteristics, name) {
+            getAdditionalData: (characteristics, name) => {
                 return {
                     manufacturer: name.split(' ')[1],
                     maxVideoCardLength: characteristics.get("Максимальна довжина відеокарти"),
-                    motherBoardFormFactor: characteristics.get("Форм-фактор материнської плати"),
+                    motherBoardFormFactors: characteristics.get("Форм-фактор материнської плати"),
                     physicalDimensions: characteristics.get("Габарити"),
                     maxCoolerHeight: characteristics.get("Максимальна висота кулера ЦП"),
-                    expansionSlots: characteristics.get("Отворів під слоти розширення"),
                     caseType: characteristics.get("Тип корпуса"),
                     material: characteristics.get("Матеріал"),
                 };

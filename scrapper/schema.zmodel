@@ -13,6 +13,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+type FilterItem {
+    title String
+
+    characteristics String[]?
+
+    minValue Int?
+    maxValue Int?
+    measuring String?
+}
+
+model ComponentsFilters {
+    id String @id @default(uuid())
+
+    componentType String @unique
+    filters FilterItem[] @json
+
+    @@allow('all', true)
+}
+
 model UserEntity {
     id String @id @default(uuid())
 
@@ -31,12 +50,14 @@ model BuildComment {
     id String @id @default(uuid())
 
     text String
-    Rating Float
+    rating Float
 
     user UserEntity @relation(fields: [userId], references: [id])
     userId String
     build BuildEntity @relation(fields: [buildId], references: [id])
     buildId String
+
+    @@allow('all', true)
 }
 
 model BuildEntity {
@@ -80,6 +101,9 @@ model ComponentInMarketplaces {
 
     createdAt DateTime @default(now()) @db.Timestamptz
 
+    unifiedComponent BaseComponent? @relation(fields: [unifiedComponentId], references: [id], onDelete: Cascade)
+    unifiedComponentId String?
+
     @@allow('all', true)
     @@index([componentUnifiedName])
 }
@@ -111,11 +135,16 @@ model BaseComponent {
     highestRating Float @default(0)
     warranty String?
 
+    imgUrls String[]
+
     isNotAvailableCandidate Boolean @default(false)
     isNotAvailable Boolean @default(false)
 
     updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz
 
+    jsonCharacteristics Json
+
+    marketplacesComponents ComponentInMarketplaces[]
     users UserEntity[]
 
     @@delegate(componentType)
@@ -124,6 +153,7 @@ model BaseComponent {
 }
 
 model CaseComponent extends BaseComponent {
+    manufacturer String?
     maxVideoCardLength String?
     motherBoardFormFactors String?
     physicalDimensions String?
@@ -136,6 +166,7 @@ model CaseComponent extends BaseComponent {
 }
 
 model CoolerComponent extends BaseComponent {
+    manufacturer String?
     sizes String?
     weight String?
     maxNoiseLevel String?
@@ -160,6 +191,7 @@ model CpuComponent extends BaseComponent {
 }
 
 model HddComponent extends BaseComponent {
+    manufacturer String?
     serias String?
     formFactor String?
     maxRotationSpeed String?
@@ -169,11 +201,13 @@ model HddComponent extends BaseComponent {
     compatability String?
     connectionInterface String?
     writingTechnology String?
+    volume String?
 
     builds BuildEntity[]
 }
 
 model MemoryComponent extends BaseComponent {
+    manufacturer String?
     memoryType String?
     memoryFrequence String?
     volume String?
@@ -198,6 +232,7 @@ model MotherboardComponent extends BaseComponent {
 }
 
 model PowerSupplyComponent extends BaseComponent {
+    manufacturer String?
     formFactor String?
     weight String?
     power String?
@@ -222,6 +257,7 @@ model SsdComponent extends BaseComponent {
 }
 
 model VideoCardComponent extends BaseComponent {
+    manufacturer String?
     volume String?
     memoryType String?
     chipset String?

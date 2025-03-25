@@ -15,7 +15,7 @@ export class TouchCoolerComponentScrapper
 
     async runPaginationScrapping(): Promise<void> {
         await paginateScrapping({
-            ...getTouchPaginationConfig(this.baseUrl, this.componentPage),
+            ...getTouchPaginationConfig(this.baseUrl, this.componentBaseUrl, this.componentPage),
             dbModel: 'coolerComponent',
             getAdditionalData: (characteristics) => {
                 return {

@@ -10,22 +10,22 @@ export class ZhukCpuComponentScrapper
         super(componentPage);
     }
 
-    componentBaseUrl = this.baseUrl + '/protsesori/';
-    currentPage = 1;
+    public componentBaseUrl = this.baseUrl + '/protsesori/';
+    public currentPage = 1;
 
     async runPaginationScrapping(): Promise<void> {
         await paginateScrapping({
-            ...getZhukPaginationConfig(this.baseUrl, this.componentPage),
+            ...getZhukPaginationConfig(this.baseUrl, this.componentBaseUrl, this.componentPage),
             dbModel: 'cpuComponent',
-            getAdditionalData(characteristics) {
+            getAdditionalData: (characteristics) => {
                 return {
-                    manufacturer: characteristics.get('Сімейство процесорів').split(' ')[0],
-                    socket: characteristics.get('Тип роз\'єму'),
-                    coreCount: characteristics.get('Кількість ядер'),
-                    threadCount: characteristics.get('Кількість потоків'),
-                    tpd: characteristics.get('Потужність TDP'),
-                    maxSupportedMemory: characteristics.get('Максимальний об\'єм пам\'яті'),
-                    warranty: characteristics.get('Гарантія'),
+                    manufacturer: characteristics.get("Сімейство процесорів").split(" ")[0],
+                    socket: characteristics.get("Тип роз'єму"),
+                    coreCount: characteristics.get("Кількість ядер"),
+                    threadCount: characteristics.get("Кількість потоків"),
+                    tpd: characteristics.get("Потужність TDP"),
+                    maxSupportedMemory: characteristics.get("Максимальний об'єм пам'яті"),
+                    warranty: characteristics.get("Гарантія"),
                 };
             },
         });

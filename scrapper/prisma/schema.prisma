@@ -12,6 +12,12 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model ComponentsFilters {
+  id            String @id() @default(uuid())
+  componentType String @unique()
+  filters       Json
+}
+
 model UserEntity {
   id              String          @id() @default(uuid())
   nickname        String          @unique()
@@ -19,6 +25,17 @@ model UserEntity {
   isAdmin         Boolean         @default(false)
   savedComponents BaseComponent[]
   savedBuilds     BuildEntity[]
+  buildComments   BuildComment[]
+}
+
+model BuildComment {
+  id      String      @id() @default(uuid())
+  text    String
+  rating  Float
+  user    UserEntity  @relation(fields: [userId], references: [id])
+  userId  String
+  build   BuildEntity @relation(fields: [buildId], references: [id])
+  buildId String
 }
 
 model BuildEntity {
@@ -39,10 +56,11 @@ model BuildEntity {
   coolers       CoolerComponent[]
   powerSupplies PowerSupplyComponent[]
   cases         CaseComponent[]
+  buildComments BuildComment[]
 }
 
 model ComponentInMarketplaces {
-  id                   String   @id() @default(uuid())
+  id                   String         @id() @default(uuid())
   name                 String
   marketplaceName      String
   price                Int?
@@ -50,7 +68,11 @@ model ComponentInMarketplaces {
   warranty             String?
   URL                  String
   componentUnifiedName String
-  createdAt            DateTime @default(now()) @db.Timestamptz()
+  createdAt            DateTime       @default(now()) @db.Timestamptz()
+  unifiedComponent     BaseComponent? @relation(fields: [unifiedComponentId], references: [id], onDelete: Cascade)
+  unifiedComponentId   String?
+
+  @@index([componentUnifiedName])
 }
 
 model ArchivedComponentInMarketplaces {
@@ -62,18 +84,23 @@ model ArchivedComponentInMarketplaces {
   URL                  String
   componentUnifiedName String
   createdAt            DateTime @default(now()) @db.Timestamptz()
+
+  @@index([componentUnifiedName])
 }
 
 model BaseComponent {
-  id                                String                @id() @default(uuid())
-  componentUnifiedName              String                @unique()
+  id                                String                    @id() @default(uuid())
+  componentUnifiedName              String                    @unique()
   componentType                     String
   lowestPrice                       Int?
-  highestRating                     Float                 @default(0)
+  highestRating                     Float                     @default(0)
   warranty                          String?
-  isNotAvailableCandidate           Boolean               @default(false)
-  isNotAvailable                    Boolean               @default(false)
-  updatedAt                         DateTime              @default(now()) @updatedAt() @db.Timestamptz()
+  imgUrls                           String[]
+  isNotAvailableCandidate           Boolean                   @default(false)
+  isNotAvailable                    Boolean                   @default(false)
+  updatedAt                         DateTime                  @default(now()) @updatedAt() @db.Timestamptz()
+  jsonCharacteristics               Json
+  marketplacesComponents            ComponentInMarketplaces[]
   users                             UserEntity[]
   delegate_aux_caseComponent        CaseComponent?
   delegate_aux_coolerComponent      CoolerComponent?
@@ -84,10 +111,13 @@ model BaseComponent {
   delegate_aux_powerSupplyComponent PowerSupplyComponent?
   delegate_aux_ssdComponent         SsdComponent?
   delegate_aux_videoCardComponent   VideoCardComponent?
+
+  @@index([componentUnifiedName])
 }
 
 model CaseComponent {
   id                         String        @id()
+  manufacturer               String?
   maxVideoCardLength         String?
   motherBoardFormFactors     String?
   physicalDimensions         String?
@@ -101,6 +131,7 @@ model CaseComponent {
 
 model CoolerComponent {
   id                         String        @id()
+  manufacturer               String?
   sizes                      String?
   weight                     String?
   maxNoiseLevel              String?
@@ -127,6 +158,7 @@ model CpuComponent {
 
 model HddComponent {
   id                         String        @id()
+  manufacturer               String?
   serias                     String?
   formFactor                 String?
   maxRotationSpeed           String?
@@ -136,12 +168,14 @@ model HddComponent {
   compatability              String?
   connectionInterface        String?
   writingTechnology          String?
+  volume                     String?
   builds                     BuildEntity[]
   delegate_aux_baseComponent BaseComponent @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model MemoryComponent {
   id                         String        @id()
+  manufacturer               String?
   memoryType                 String?
   memoryFrequence            String?
   volume                     String?
@@ -168,6 +202,7 @@ model MotherboardComponent {
 
 model PowerSupplyComponent {
   id                         String        @id()
+  manufacturer               String?
   formFactor                 String?
   weight                     String?
   power                      String?
@@ -194,6 +229,7 @@ model SsdComponent {
 
 model VideoCardComponent {
   id                         String        @id()
+  manufacturer               String?
   volume                     String?
   memoryType                 String?
   chipset                    String?

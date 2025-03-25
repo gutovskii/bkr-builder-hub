@@ -15,17 +15,15 @@ export class TouchCaseComponentScrapper
 
     async runPaginationScrapping(): Promise<void> {
         await paginateScrapping({
-            ...getTouchPaginationConfig(this.baseUrl, this.componentPage),
+            ...getTouchPaginationConfig(this.baseUrl, this.componentBaseUrl, this.componentPage),
             dbModel: 'caseComponent',
             getAdditionalData: (characteristics) => {
                 return {
                     rating: 0,
                     manufacturer: characteristics.get("Бренд"),
-                    size: characteristics.get("Максимальна довжина відеокарти"),
                     motherBoardFormFactors: characteristics.get("Підтримка материнських плат"),
                     physicalDimensions: characteristics.get("Розміри"),
                     maxCoolerHeight: characteristics.get("Максимальна висота процесорного кулера"),
-                    expansionSlots: characteristics.get("Інтерфейс підключення"),
                     caseType: characteristics.get("Тип корпусу"),
                     material: characteristics.get("Матеріал корпусу"),
                 };

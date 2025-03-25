@@ -20,7 +20,7 @@ export class TouchCpuComponentScrapper
         // let hasNext = true;
 
         await paginateScrapping({
-            ...getTouchPaginationConfig(this.baseUrl, this.componentPage),
+            ...getTouchPaginationConfig(this.baseUrl, this.componentBaseUrl, this.componentPage),
             dbModel: 'cpuComponent',
             getAdditionalData: (characteristics) => {
                 return {

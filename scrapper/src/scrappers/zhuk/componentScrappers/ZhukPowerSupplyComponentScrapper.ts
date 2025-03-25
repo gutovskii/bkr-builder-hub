@@ -15,11 +15,10 @@ export class ZhukPowerSupplyComponentScrapper
 
     async runPaginationScrapping(): Promise<void> {
         await paginateScrapping({
-            ...getZhukPaginationConfig(this.baseUrl, this.componentPage),
+            ...getZhukPaginationConfig(this.baseUrl, this.componentBaseUrl, this.componentPage),
             dbModel: 'powerSupplyComponent',
-            getAdditionalData(characteristics, name) {
+            getAdditionalData: (characteristics, name) => {
                 return {
-                    manufacturer: name.split(" ")[2],
                     warranty: characteristics.get("Гарантія"),
                     weight: characteristics.get(""),
                     power: characteristics.get("Потужність"),

@@ -1,46 +1,48 @@
 import { Page } from "puppeteer";
 import { MarketplacePaginationConfig } from "../../common/paginateScrapping";
 import { prisma } from "../../prisma";
-import { ZhukConsts } from "./AbstractZhukComponentScrapper";
+import { ItboxConsts } from "./AbstractItboxComponentScrapper";
 
-export function getZhukPaginationConfig<TModel>(baseUrl: string, componentPageUrl: string, componentPage: Page): MarketplacePaginationConfig<TModel> {
+export function getItboxPaginationConfig<TModel>(baseUrl: string, componentPageUrl: string, componentPage: Page): MarketplacePaginationConfig<TModel> {
     return {
-        marketplaceName: ZhukConsts.ZHUK_NAME,
+        marketplaceName: ItboxConsts.ITBOX_NAME,
         prisma: prisma,
         baseUrl,
         componentPage,
         getComponentsPageUrl: (pageNumber: number) => {
-            return pageNumber === 1 ? componentPageUrl : `${componentPageUrl}filter/page=${pageNumber}/`;
+            return pageNumber === 1 ? componentPageUrl : `${componentPageUrl}/page=${pageNumber}`;
         },
         getComponentsHrefs(listPageBody) {
             return listPageBody.evaluate(b => {
-                return Array.from(b.querySelectorAll('.catalogGrid.catalog-grid li meta:last-child')).map((meta: any) => meta.content);
-            })
+                return Array.from(document.querySelectorAll('.items.tablet > .stuff.left:not(out-of-stock) > div > div:first-child')).map(el => el.getAttribute('href'));
+            });
         },
         getHasNext(listPageBody) {
             return listPageBody.evaluate(b => {
-                const canBtnGoNext = !b.querySelector('.pager__item--forth').classList.contains('is-disabled');
+                const canBtnGoNext = b.querySelector('.next');
                 return Boolean(b && canBtnGoNext);
-            })
+            });
         },
         getScrappedData(componentPageBody, getAdditionalDataStr) {
             return componentPageBody.evaluate((b, getAdditionalDataStr) => {
-                const name = b.querySelector('.product-title').textContent.trim();
-                const price = parseInt(b.querySelector('.product-price__item').textContent.trim().replace(/[^\d]/g, ""), 10);
-                const imgUrls = Array.from(
-                    b.querySelectorAll('.gallery__photos-list span img')
-                ).map(a => document.location.origin + a.attributes.getNamedItem('src').textContent);
+                const name = b.querySelector('.h1.scada').textContent.trim();
+                const price = parseInt(b.querySelector('.stuff-price__digits').textContent.trim().replace(/[^\d]/g, ""), 10);
+                const imgUrls = Array.from(new Set(Array.from(
+                    document.querySelectorAll('.product-gallery .stuff-img.slick-slide')
+                ).map(a => a.attributes.getNamedItem('data-img-big').textContent)));
+                const warranty = b.querySelector('.product-warranty-period').textContent.trim();
 
                 if (price === 0) {
                     return null;
                 }
 
-                const rows = b.querySelectorAll('.product-features__row');
+                const rows = b.querySelectorAll('tr.filter-url');
+                
                 let characteristics = new Map<string, string>();
 
                 rows.forEach(row => {
-                    const nameElement = row.querySelector('.product-features__cell:first-child');
-                    const valueElement = row.querySelector('.product-features__cell:last-child');
+                    const nameElement = row.querySelector('td > span.mr-white');
+                    const valueElement = row.querySelector('td:nth-child(2)');
 
                     if (nameElement && valueElement) {
                         characteristics.set(
@@ -55,7 +57,7 @@ export function getZhukPaginationConfig<TModel>(baseUrl: string, componentPageUr
                     price,
                     imgUrls,
                     rating: 0, // Todo: add rating somehow
-                    warranty: characteristics.get("Гарантія"),
+                    warranty,
                 };
 
                 const getAdditionalData = new Function("return " + getAdditionalDataStr)();
@@ -66,6 +68,6 @@ export function getZhukPaginationConfig<TModel>(baseUrl: string, componentPageUr
                     jsonCharacteristics: JSON.stringify(getAdditionalData(characteristics, name, price)), // todo: wtf,
                 };
             }, getAdditionalDataStr);
-        }
+        },
     }
 }
