@@ -55,7 +55,7 @@ export default function ComponentsList() {
             </div>
         </div>
         <div className="flex flex-col justify-center">
-            {query.isFetching ? <Spin className="flex justify-center items-center"/> : <div className="p-5 flex w-full flex-wrap justify-start">
+            {query.isFetching ? <Spin className="flex justify-center items-center"/> : <div className="p-5 flex w-full flex-wrap">
                 {query.data?.results.map((result: any) => {
                     return <ComponentItem key={result.id} data={result} />
                 })}

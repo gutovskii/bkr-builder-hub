@@ -64,7 +64,9 @@ export default function BuildItem({ data, deleteBuild, unsaveBuild }: any) {
                         <>
                             <div className="min-h-[25px]">
                                 <div>
-                                    Користувач: <Typography.Text>{data.user.nickname}</Typography.Text>
+                                    Користувач: <Link to="/users/$nickname" params={{nickname: data.user.nickname}}>
+                                        <Typography.Text>{data.user.nickname}</Typography.Text>
+                                    </Link>
                                 </div>
                                 <div>
                                     Ціна: <Typography.Text>{data.price} ₴</Typography.Text>

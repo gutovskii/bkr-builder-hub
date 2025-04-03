@@ -1,4 +1,4 @@
-import { formatCamelCaseToSentence } from "@/common/helpers";
+import { capitalizeFirstLetter, formatCamelCaseToSentence } from "@/common/helpers";
 import { componentsService } from "@/services/components.service";
 import { useQuery } from "@tanstack/react-query";
 import { Button, Carousel, Image, Spin, Table, Typography } from "antd";
@@ -19,12 +19,14 @@ export default function ComponentDetails({ componentType, id }: {componentType: 
         data = { imgUrl: query.data.imgUrls[0], ...data };
 
         const parsed = JSON.parse(build);
-        const buildCharacterisitics = parsed[componentType];
+        const buildComponentType = capitalizeFirstLetter(componentType);
 
-        if (componentType === 'MotherboardComponent' ||
-            componentType === 'CpuComponent'
+        const buildCharacterisitics = parsed[buildComponentType];
+
+        if (buildComponentType === 'MotherboardComponent' ||
+            buildComponentType === 'CpuComponent'
         ) {
-            parsed[componentType] = [data];
+            parsed[buildComponentType] = [data];
         } else {
             if (buildCharacterisitics) {
                 const sameComponent = buildCharacterisitics.find((bc: any) => bc.id === data.id);
@@ -33,8 +35,10 @@ export default function ComponentDetails({ componentType, id }: {componentType: 
             if (buildCharacterisitics)
                 buildCharacterisitics.push(data);
             else
-                parsed[data.componentType] = [data];
+                parsed[buildComponentType] = [data];
         }
+
+        localStorage.setItem('build', JSON.stringify(parsed));
     }
 
     return query.isLoading ? <Spin /> : <div className="p-10">

@@ -65,9 +65,9 @@ export default function Login() {
                     </Button>
                 </Form.Item>
 
-                <Link to="/register">
-                    <Typography.Text><p className="text-blue-500">Do not have an account? Register!</p></Typography.Text>
-                </Link>
+                <Typography.Text>
+                    Do not have an account? <Link to="/register" className="text-blue-500">Register!</Link>
+                </Typography.Text>
             </Form>
         </div>
     )

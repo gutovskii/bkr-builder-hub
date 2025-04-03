@@ -43,6 +43,8 @@ model UserEntity {
     savedBuilds BuildEntity[]
     buildComments BuildComment[]
 
+    createdAt DateTime @default(now())
+
     @@allow('all', true)
 }
 

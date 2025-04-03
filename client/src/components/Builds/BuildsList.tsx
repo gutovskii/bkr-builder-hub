@@ -49,7 +49,7 @@ export default function BuildsList({ title, search, findMethod }: BuildsListProp
             return buildService.unsaveBuild(buildId);
         },
         onSuccess() {
-            message.info('Збірку прибрано зі збережених');
+            message.success('Збірку прибрано зі збережених');
             query.refetch();
         }
     });

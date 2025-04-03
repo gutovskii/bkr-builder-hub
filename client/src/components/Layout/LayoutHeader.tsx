@@ -3,7 +3,7 @@ import { authService } from "@/services/auth.service";
 import { useStore } from "@/store/store";
 import type { UserPayload } from "@/types";
 import { BuildOutlined, LogoutOutlined, ProfileOutlined, SaveOutlined, UserOutlined } from "@ant-design/icons";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Avatar, Button, Dropdown, Menu, Typography, type MenuProps } from "antd";
 import { Header } from "antd/es/layout/layout";
 import { jwtDecode } from "jwt-decode";
@@ -94,7 +94,9 @@ export default function LayoutHeader() {
     return <Header className="flex items-center justify-between">
         <div className="flex items-center">
             <div>
-                <Typography.Title style={{color: 'white'}}>BUILDER HUB</Typography.Title>
+                <Link to="/components">
+                    <Typography.Title style={{color: 'white'}}>BUILDER HUB</Typography.Title>
+                </Link>
             </div>
             <Menu
                 theme="dark"

@@ -9,6 +9,7 @@ export default function ComponentItem({data}: any) {
     const addToBuild = (data: any) => {
         let build = localStorage.getItem('build');
         if (!build) return;
+        
         const componentInMarketplace = { imgUrl: data.imgUrls[0], ...data.marketplacesComponents.find((mc: any) => mc.price === data.lowestPrice)! };
 
         const parsed = JSON.parse(build);

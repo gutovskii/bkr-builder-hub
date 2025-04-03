@@ -8,6 +8,7 @@ import { BuildModule } from './build/build.module';
 import { CommentsModule } from './comments/comments.module';
 import { ConfigModule } from '@nestjs/config';
 import { FiltersModule } from './filters/filters.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { FiltersModule } from './filters/filters.module';
     BuildModule,
     CommentsModule,
     FiltersModule,
+    UsersModule,
   ],
   providers: [PrismaService],
 })

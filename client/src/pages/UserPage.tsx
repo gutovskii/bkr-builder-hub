@@ -1,17 +1,21 @@
-import Components from "@/components/Components/Components";
+import { authRouteGuard } from "@/common/auth-route-guard";
 import LayoutHeader from "@/components/Layout/LayoutHeader";
+import User from "@/components/User/User";
 import { rootRoute } from "@/main";
 import { createRoute } from "@tanstack/react-router";
 import { Layout } from "antd";
 import { Content } from "antd/es/layout/layout";
 
-export const componentsRoute = createRoute({
-    path: '/components',
+export const userPageRoute = createRoute({
+    path: '/users/$nickname',
     getParentRoute: () => rootRoute,
-    component: ComponentsPage,
+    component: UserPage,
+    beforeLoad: () => authRouteGuard()
 });
 
-export default function ComponentsPage() {
+export default function UserPage() {
+    const params = userPageRoute.useParams();
+
     return <div>
         <LayoutHeader />
         <Layout>
@@ -22,7 +26,7 @@ export default function ComponentsPage() {
                     minHeight: 'calc(90vh)',
                 }}
             >
-                <Components />
+                <User nickname={params.nickname} />
             </Content>
         </Layout>
     </div>

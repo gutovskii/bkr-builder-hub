@@ -1,8 +1,8 @@
+import { authRouteGuard } from "@/common/auth-route-guard";
 import BuildsFiltersSider from "@/components/Builds/BuildsFiltersSider";
 import BuildsList from "@/components/Builds/BuildsList";
 import LayoutHeader from "@/components/Layout/LayoutHeader";
-import { rootRoute, router } from "@/main";
-import { authService } from "@/services/auth.service";
+import { rootRoute } from "@/main";
 import { createRoute } from "@tanstack/react-router"
 import { Layout } from "antd";
 import { Content } from "antd/es/layout/layout";
@@ -20,13 +20,7 @@ export const buildsSavedListPageRoute = createRoute({
     getParentRoute: () => rootRoute,
     component: BuildsSavedListPage,
     validateSearch: buildsSearchSchema,
-    async beforeLoad() {
-        try {
-            await authService.findUserByToken();
-        } catch (e: unknown) {
-            router.navigate({ to: '/components' });
-        }
-    },
+    beforeLoad: () => authRouteGuard(),
 });
 
 export default function BuildsSavedListPage() {
