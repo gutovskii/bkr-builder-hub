@@ -32,7 +32,8 @@ model UserEntity {
   hashPassword    String
   avatarUrl       String
   savedComponents BaseComponent[]
-  savedBuilds     BuildEntity[]
+  savedBuilds     BuildEntity[]   @relation("SavedBuilds")
+  createdBuilds   BuildEntity[]   @relation("CreatedBuilds")
   buildComments   BuildComment[]
 }
 
@@ -56,8 +57,9 @@ model BuildEntity {
   rating        Float                  @default(0)
   likes         Int                    @default(0)
   imgsUrls      String[]
-  user          UserEntity             @relation(fields: [userId], references: [id])
+  user          UserEntity             @relation("CreatedBuilds", fields: [userId], references: [id])
   userId        String
+  usersSaved    UserEntity[]           @relation("SavedBuilds")
   motherBoard   MotherboardComponent?  @relation(fields: [motherBoardId], references: [id])
   motherBoardId String?
   cpu           CpuComponent?          @relation(fields: [cpuId], references: [id])
@@ -70,6 +72,7 @@ model BuildEntity {
   powerSupplies PowerSupplyComponent[]
   cases         CaseComponent[]
   buildComments BuildComment[]
+  isDeleted     Boolean                @default(false)
 }
 
 model ComponentInMarketplaces {

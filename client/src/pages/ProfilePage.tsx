@@ -2,7 +2,7 @@ import LayoutHeader from "@/components/Layout/LayoutHeader";
 import Profile from "@/components/Profile/Profile";
 import { rootRoute, router } from "@/main";
 import { authService } from "@/services/auth.service";
-import { createRoute, redirect } from "@tanstack/react-router";
+import { createRoute } from "@tanstack/react-router";
 import { Layout } from "antd";
 import { Content } from "antd/es/layout/layout";
 

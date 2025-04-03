@@ -42,6 +42,33 @@ export class BuildController {
     return this.buildService.findAll(name, pagination, filters);
   }
 
+  @Get('created')
+  @UseGuards(AuthGuard)
+  getUserBuilds(
+    @Query('name') name: string,
+    @Query(PaginationPipe) pagination: PaginationConfig,
+    @Query(QueryFilterPipe) filters: FilterQuery,
+    @User() user: UserPayload,
+  ) {
+    return this.buildService.findUserBuilds(user.id, name, pagination, filters);
+  }
+
+  @Get('saved')
+  @UseGuards(AuthGuard)
+  getSavedBuilds(
+    @Query('name') name: string,
+    @Query(PaginationPipe) pagination: PaginationConfig,
+    @Query(QueryFilterPipe) filters: FilterQuery,
+    @User() user: UserPayload,
+  ) {
+    return this.buildService.findSavedBuilds(
+      user.id,
+      name,
+      pagination,
+      filters,
+    );
+  }
+
   @Get(':id')
   getBuild(@Param('id', ParseUUIDPipe) id: string) {
     return this.buildService.findOne(id);
@@ -68,12 +95,21 @@ export class BuildController {
     return this.buildService.delete(id);
   }
 
-  @Post()
+  @Post('save')
   @UseGuards(AuthGuard)
   saveBuild(
     @Body() { buildId }: { buildId: string },
     @User() user: UserPayload,
   ) {
     return this.buildService.saveBuild(user.id, buildId);
+  }
+
+  @Post('unsave')
+  @UseGuards(AuthGuard)
+  unsaveBuild(
+    @Body() { buildId }: { buildId: string },
+    @User() user: UserPayload,
+  ) {
+    return this.buildService.unsaveBuild(user.id, buildId);
   }
 }

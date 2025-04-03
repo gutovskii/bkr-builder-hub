@@ -1,7 +1,8 @@
 import BuildsFiltersSider from "@/components/Builds/BuildsFiltersSider";
 import BuildsList from "@/components/Builds/BuildsList";
 import LayoutHeader from "@/components/Layout/LayoutHeader";
-import { rootRoute } from "@/main";
+import { rootRoute, router } from "@/main";
+import { authService } from "@/services/auth.service";
 import { createRoute } from "@tanstack/react-router"
 import { Layout } from "antd";
 import { Content } from "antd/es/layout/layout";
@@ -14,17 +15,22 @@ const buildsSearchSchema = z.object({
     filters: z.any().optional(),
 });
 
-export const buildsListPageRoute = createRoute({
-    path: '/builds',
+export const buildsCreatedListPageRoute = createRoute({
+    path: '/builds/created',
     getParentRoute: () => rootRoute,
-    component: BuildsListPage,
+    component: BuildsCreatedListPage,
     validateSearch: buildsSearchSchema,
+    async beforeLoad() {
+        try {
+            await authService.findUserByToken();
+        } catch (e: unknown) {
+            router.navigate({ to: '/components' });
+        }
+    },
 });
 
-export type BuildsSearchSchemaType = z.infer<typeof buildsSearchSchema>;
-
-export default function BuildsListPage() {
-    const search = buildsListPageRoute.useSearch();
+export default function BuildsCreatedListPage() {
+    const search = buildsCreatedListPageRoute.useSearch();
 
     return <div>
         <LayoutHeader />
@@ -37,7 +43,7 @@ export default function BuildsListPage() {
                     minHeight: 'calc(90vh)',
                 }}
             >
-                <BuildsList title="Готові збірки" findMethod="findAll" search={search} />
+                <BuildsList title="Створені збірки" findMethod="findAllCreated" search={search} />
             </Content>
         </Layout>
     </div>

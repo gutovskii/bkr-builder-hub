@@ -1,14 +1,16 @@
 import { buildService } from "@/services/build.service";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate, useSearch } from "@tanstack/react-router"
+import { useNavigate } from "@tanstack/react-router"
 import { useEffect, useState } from "react";
 import Sider from "antd/es/layout/Sider";
 import { Checkbox, Collapse, Slider } from "antd";
 import { formatCamelCaseToSentence } from "@/common/helpers";
 
-export default function BuildsFiltersSider() {
-    const { filters: searchFilters } = useSearch({ from: '/builds' });
+export type BuildsFiltersSiderProps = {
+    searchFilters: any;
+}
 
+export default function BuildsFiltersSider({ searchFilters }: BuildsFiltersSiderProps) {
     const navigate = useNavigate();
 
     const [filters, setFilters] = useState<any>(undefined);

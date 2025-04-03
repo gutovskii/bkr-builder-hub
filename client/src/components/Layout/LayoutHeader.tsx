@@ -12,31 +12,31 @@ const items: MenuProps['items'] = [{
     key: 'components',
     label: 'Компоненти',
     children: [
-        { key: 'cpu', label: 'CPU', onClick: () => { 
+        { key: 'cpu', label: 'Процесори', onClick: () => { 
             router.navigate({ to: '/components/$componentType', params: {componentType: 'cpuComponent'}, search: {page: 1, filters: {}} }) 
         }},
-        { key: 'motherboard', label: 'Motherboards', onClick: () => { 
+        { key: 'motherboard', label: 'Материнські плати', onClick: () => { 
             router.navigate({ to: '/components/$componentType', params: {componentType: 'motherboardComponent'}, search: {page: 1, filters: {}}}) 
         }},
-        { key: 'ssd', label: 'SSD', onClick: () => { 
+        { key: 'ssd', label: 'CCД диски', onClick: () => { 
             router.navigate({ to: '/components/$componentType', params: {componentType: 'ssdComponent'}, search: {page: 1, filters: {}}}) 
         }},
-        { key: 'hdd', label: 'HDD', onClick: () => { 
+        { key: 'hdd', label: 'Жорсткі диски', onClick: () => { 
             router.navigate({ to: '/components/$componentType', params: {componentType: 'hddComponent'}, search: {page: 1, filters: {}}}) 
         }},
-        { key: 'videocard', label: 'Videocards', onClick: () => { 
+        { key: 'videocard', label: 'Відеокарти', onClick: () => { 
             router.navigate({ to: '/components/$componentType', params: {componentType: 'videoCardComponent'}, search: {page: 1, filters: {}}}) 
         }},
-        { key: 'powersupply', label: 'Power supplies', onClick: () => { 
+        { key: 'powersupply', label: 'Джерела живлення', onClick: () => { 
             router.navigate({ to: '/components/$componentType', params: {componentType: 'powerSupplyComponent'}, search: {page: 1, filters: {}}}) 
         }},
-        { key: 'cooler', label: 'Coolers', onClick: () => { 
+        { key: 'cooler', label: 'Кулери', onClick: () => { 
             router.navigate({ to: '/components/$componentType', params: {componentType: 'coolerComponent'}, search: {page: 1, filters: {}}}) 
         }},
-        { key: 'memory', label: 'Memories', onClick: () => { 
+        { key: 'memory', label: 'Оперативна пам\'ять', onClick: () => { 
             router.navigate({ to: '/components/$componentType', params: {componentType: 'memoryComponent'}, search: {page: 1, filters: {}}}) 
         }},
-        { key: 'case', label: 'Cases', onClick: () => { 
+        { key: 'case', label: 'Кейси', onClick: () => { 
             router.navigate({ to: '/components/$componentType', params: {componentType: 'caseComponent'}, search: {page: 1, filters: {}}}) 
         }},
     ]
@@ -54,18 +54,20 @@ const userDropdownItems: MenuProps['items'] = [
     {
         key: 1,
         icon: <ProfileOutlined />,
-        label: 'My profile',
+        label: 'Мій профіль',
         onClick: () => router.navigate({ to: '/profile' }),
     },
     {
         key: 2,
         icon: <BuildOutlined />,
-        label: 'My builds',
+        label: 'Мої збірки',
+        onClick: () => router.navigate({ to: '/builds/created' }),
     },
     {
         key: 3,
         icon: <SaveOutlined />,
-        label: 'Saved builds',
+        label: 'Збережені збірки',
+        onClick: () => router.navigate({ to: '/builds/saved' }),
     },
     {
         key: 4,

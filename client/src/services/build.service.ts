@@ -11,6 +11,26 @@ export const buildService = {
             params: { name, page, pageSize, filters },
         })).data;
     },
+    async findAllCreated({
+        name,
+        page,
+        pageSize,
+        filters
+    }: any) {
+        return (await axiosInstance.get('/builds/created', {
+            params: { name, page, pageSize, filters },
+        })).data;
+    },
+    async findAllSaved({
+        name,
+        page,
+        pageSize,
+        filters
+    }: any) {
+        return (await axiosInstance.get('/builds/saved', {
+            params: { name, page, pageSize, filters },
+        })).data;
+    },
     async findOne(id: string) {
         return (await axiosInstance.get(`/builds/${id}`)).data;
     },
@@ -28,5 +48,11 @@ export const buildService = {
     },
     async deleteComment(commentId: string) {
         return (await axiosInstance.delete(`/comments/${commentId}`)).data;
+    },
+    async saveBuild(buildId: string) {
+        return (await axiosInstance.post('/builds/save', { buildId })).data;
+    },
+    async unsaveBuild(buildId: string) {
+        return (await axiosInstance.post('/builds/unsave', { buildId })).data;
     }
 };

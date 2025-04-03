@@ -17,19 +17,18 @@ export class BuildService {
   ) {}
 
   async delete(id: string) {
-    const buildToDelete = await this.prisma.buildEntity.findUnique({
-      where: {
-        id,
-      },
+    const deletedBuild = await this.prisma.buildEntity.update({
+      where: { id },
+      data: { isDeleted: true },
     });
 
-    const imgsKeys = buildToDelete.imgsUrls.map(
+    const imgsKeys = deletedBuild.imgsUrls.map(
       (url) => url.match(/[^\/]+$/)[0],
     );
 
     await Promise.all(imgsKeys.map((key) => this.awsService.removeObject(key)));
 
-    return this.prisma.buildEntity.delete({ where: { id } });
+    return deletedBuild;
   }
 
   async create(
@@ -160,7 +159,9 @@ export class BuildService {
         ...filters.where,
         name: {
           contains: name,
+          mode: 'insensitive',
         },
+        isDeleted: false,
       },
     });
     const totalPages =
@@ -173,7 +174,9 @@ export class BuildService {
         ...filters.where,
         name: {
           contains: name,
+          mode: 'insensitive',
         },
+        isDeleted: false,
       },
       orderBy: filters.orderBy,
       skip: pagination.skip,
@@ -191,12 +194,121 @@ export class BuildService {
     };
   }
 
-  async saveBuild(userId: string, buildId: string) {
+  async findUserBuilds(
+    userId: string,
+    name: string,
+    pagination: PaginationConfig,
+    filters: FilterQuery,
+  ) {
+    const totalCount = await this.prisma.buildEntity.count({
+      where: {
+        ...filters.where,
+        userId,
+        name: {
+          contains: name,
+          mode: 'insensitive',
+        },
+        isDeleted: false,
+      },
+    });
+    const totalPages =
+      (totalCount / PAGE_SIZE) % 10 >= 1
+        ? Math.round(totalCount / PAGE_SIZE) + 1
+        : Math.round(totalCount / PAGE_SIZE);
+
+    const results = await this.prisma.buildEntity.findMany({
+      where: {
+        ...filters.where,
+        userId,
+        name: {
+          contains: name,
+          mode: 'insensitive',
+        },
+        isDeleted: false,
+      },
+      orderBy: filters.orderBy,
+      skip: pagination.skip,
+      take: pagination.take,
+      include: {
+        user: true,
+      },
+    });
+
+    return {
+      results,
+      totalPages,
+      totalCount,
+      page: pagination.page,
+    };
+  }
+
+  async findSavedBuilds(
+    userId: string,
+    name: string,
+    pagination: PaginationConfig,
+    filters: FilterQuery,
+  ) {
+    const totalCount = await this.prisma.buildEntity.count({
+      where: {
+        id: userId,
+        name: {
+          contains: name,
+          mode: 'insensitive',
+        },
+        usersSaved: {
+          some: { id: userId },
+        },
+        isDeleted: false,
+      },
+    });
+    const totalPages =
+      (totalCount / PAGE_SIZE) % 10 >= 1
+        ? Math.round(totalCount / PAGE_SIZE) + 1
+        : Math.round(totalCount / PAGE_SIZE);
+
+    const results = await this.prisma.buildEntity.findMany({
+      where: {
+        ...filters.where,
+        name: {
+          contains: name,
+          mode: 'insensitive',
+        },
+        usersSaved: {
+          some: { id: userId },
+        },
+        isDeleted: false,
+      },
+      orderBy: filters.orderBy,
+      skip: pagination.skip,
+      take: pagination.take,
+      include: { user: true },
+    });
+
+    return {
+      results,
+      totalPages,
+      totalCount,
+      page: pagination.page,
+    };
+  }
+
+  saveBuild(userId: string, buildId: string) {
     return this.prisma.userEntity.update({
       where: { id: userId },
       data: {
         savedBuilds: {
           connect: { id: buildId },
+        },
+      },
+    });
+  }
+
+  unsaveBuild(userId: string, buildId: string) {
+    return this.prisma.userEntity.update({
+      where: { id: userId },
+      data: {
+        savedBuilds: {
+          disconnect: { id: buildId },
         },
       },
     });

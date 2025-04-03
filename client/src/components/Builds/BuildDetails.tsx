@@ -1,9 +1,9 @@
 import { buildDetailsPageRoute } from "@/pages/BuildDetailsPage";
 import { buildService } from "@/services/build.service";
 import { useStore } from "@/store/store";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, SaveOutlined } from "@ant-design/icons";
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { Avatar, Button, Carousel, Form, Image, List, Rate, Spin, Tooltip, Typography } from "antd";
+import { Avatar, Button, Carousel, Form, Image, List, message, Rate, Spin, Tooltip, Typography } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { useEffect, useState } from "react";
 import BuildComponentsTable from "./BuildComponentsTable";
@@ -68,6 +68,20 @@ export default function BuildDetails() {
         deleteCommentMutation.mutate(commentId);
     }
 
+    const saveBuildMutation = useMutation({
+        mutationFn: (buildId: string) => {
+            return buildService.saveBuild(buildId);
+        },
+        mutationKey: ['save-build'],
+        onSuccess() {
+            message.success('Build saved successfully!');
+        },
+    });
+
+    const saveBuild = (buildId: string) => {
+        saveBuildMutation.mutate(buildId);
+    }
+
     useEffect(() => {
         if (newComments && findBuildQuery.data?.buildComments) {
             setAllComments([...newComments, ...findBuildQuery.data.buildComments]);
@@ -85,6 +99,9 @@ export default function BuildDetails() {
             <div>
                 <Typography.Text>Ціна: {findBuildQuery.data.price} ₴</Typography.Text>
             </div>
+            {user && <div>
+                Зберегти збірку: <SaveOutlined onClick={() => saveBuild(findBuildQuery.data.id)} />
+            </div>}
             <div>
                 <Typography.Text>
                     <div>

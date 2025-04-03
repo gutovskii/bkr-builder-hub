@@ -41,7 +41,7 @@ export default function ComponentItem({data}: any) {
             actions={[
                 <Tooltip title="Додати в збірку">
                     <PlusOutlined title="Додати в збірку" key="addToBuild" onClick={() => addToBuild(data)} />
-                </Tooltip>
+                </Tooltip>,
             ]}
         >
             <Link to="/components/$componentType/$id" params={{componentType: params.componentType, id: data.id}}>

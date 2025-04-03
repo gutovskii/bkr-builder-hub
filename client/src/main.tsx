@@ -25,6 +25,8 @@ import { profileRoute } from './pages/ProfilePage.tsx';
 import { createBuildRoute } from './pages/CreateBuildPage.tsx';
 import { buildDetailsPageRoute } from './pages/BuildDetailsPage.tsx';
 import { buildsListPageRoute } from './pages/BuildsListPage.tsx';
+import { buildsCreatedListPageRoute } from './pages/BuildsCreatedListPage.tsx';
+import { buildsSavedListPageRoute } from './pages/BuildsSavedListPage.tsx';
 
 export const rootRoute = createRootRoute({
   component: () => (
@@ -52,7 +54,9 @@ const routeTree = rootRoute.addChildren([
   componentDetailsRoute,
   createBuildRoute,
   buildsListPageRoute,
-  buildDetailsPageRoute
+  buildsCreatedListPageRoute,
+  buildsSavedListPageRoute,
+  buildDetailsPageRoute,
 ])
 
 const queryClient = new QueryClient();

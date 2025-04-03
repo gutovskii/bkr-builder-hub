@@ -60,6 +60,7 @@ export class ComponentsController {
         ...filters.where,
         componentUnifiedName: {
           contains: name,
+          mode: 'insensitive',
         },
       },
       orderBy: filters.orderBy,

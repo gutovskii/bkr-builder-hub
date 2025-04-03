@@ -33,7 +33,7 @@ export class CommentsService {
 
       build.rating =
         build.buildComments.reduce((acc, curr) => curr.rating + acc, 0) /
-        build.buildComments.length;
+        build.buildComments.filter((c) => c.rating).length;
 
       await this.prismaService.buildEntity.update({
         where: { id: build.id },
@@ -93,7 +93,7 @@ export class CommentsService {
     if (build.buildComments.length) {
       build.rating = build.rating =
         build.buildComments.reduce((acc, curr) => curr.rating + acc, 0) /
-        build.buildComments.length;
+        build.buildComments.filter((c) => c.rating).length;
     } else {
       build.rating = 0;
     }
