@@ -1,13 +1,14 @@
-import { Page } from "puppeteer";
+import { Browser } from "puppeteer";
 import { paginateScrapping } from "../../../common/paginateScrapping";
 import { getItboxPaginationConfig } from "../getItboxPaginationConfig";
 import { AbstractItboxComponentScrapper } from "../AbstractItboxComponentScrapper";
+
 // todo
 export class ItboxCpuComponentScrapper 
     extends AbstractItboxComponentScrapper {
     
-    constructor(private readonly componentPage: Page) {
-        super(componentPage);
+    constructor(private readonly browser: Browser) {
+        super(browser);
     }
 
     public componentBaseUrl = this.baseUrl + '/ua/category/Procesori-c3214/';
@@ -15,16 +16,24 @@ export class ItboxCpuComponentScrapper
 
     async runPaginationScrapping(): Promise<void> {
         await paginateScrapping({
-            ...getItboxPaginationConfig(this.baseUrl, this.componentBaseUrl, this.componentPage),
+            ...getItboxPaginationConfig(this.baseUrl, this.componentBaseUrl, this.browser),
             dbModel: 'cpuComponent',
             getAdditionalData: (characteristics) => {
+                (window as any).parseMeasuring = (value: string | null | undefined): number | null => {
+                    if (!value) return null;
+                    
+                    const regexpResult = value.replace(/,/g, '.').match(/\d+(\.\d+)?/);
+                    if (!regexpResult) return null;
+                    
+                    return value ? Number(regexpResult[0]) : null;
+                }
                 return {
                     manufacturer: characteristics.get("Виробник"),
                     socket: characteristics.get("Сокет"),
-                    coreCount: characteristics.get('Кількість ядер').split(' ')[0],
-                    threadCount: characteristics.get('Кількість потоків').split(' ')[0],
-                    tpd: characteristics.get('Максимальний TDP'),
-                    maxSupportedMemory: characteristics.get('Максимальний обсяг оперативної пам\'яті'),
+                    coreCount: (window as any).parseMeasuring(characteristics.get('Кількість ядер').split(' ')[0]),
+                    threadCount: (window as any).parseMeasuring(characteristics.get('Кількість потоків').split(' ')[0]),
+                    tpd: (window as any).parseMeasuring(characteristics.get('Максимальний TDP')),
+                    maxSupportedMemory: (window as any).parseMeasuring(characteristics.get('Максимальний обсяг оперативної пам\'яті')),
                 };
             },
         });

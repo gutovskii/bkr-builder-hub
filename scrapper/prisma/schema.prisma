@@ -118,11 +118,11 @@ model BaseComponent {
 model CaseComponent {
   id                         String        @id()
   manufacturer               String?
-  maxVideoCardLength         String?
+  maxVideoCardLength         Float?
   motherBoardFormFactors     String?
   physicalDimensions         String?
-  maxCoolerHeight            String?
-  expansionSlots             String?
+  maxCoolerHeight            Float?
+  expansionSlots             Float?
   caseType                   String?
   material                   String?
   builds                     BuildEntity[]
@@ -133,10 +133,10 @@ model CoolerComponent {
   id                         String        @id()
   manufacturer               String?
   sizes                      String?
-  weight                     String?
-  maxNoiseLevel              String?
+  weight                     Float?
+  maxNoiseLevel              Float?
   socket                     String?
-  tdp                        String?
+  tdp                        Float?
   builds                     BuildEntity[]
   delegate_aux_baseComponent BaseComponent @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
@@ -147,10 +147,10 @@ model CpuComponent {
   series                     String?
   processorGeneration        String?
   socket                     String?
-  coreCount                  String?
-  threadCount                String?
-  tpd                        String?
-  maxSupportedMemory         String?
+  coreCount                  Float?
+  threadCount                Float?
+  tpd                        Float?
+  maxSupportedMemory         Float?
   lithografy                 String?
   builds                     BuildEntity[]
   delegate_aux_baseComponent BaseComponent @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -161,14 +161,14 @@ model HddComponent {
   manufacturer               String?
   serias                     String?
   formFactor                 String?
-  maxRotationSpeed           String?
-  weight                     String?
+  maxRotationSpeed           Float?
+  weight                     Float?
   physicalDimensions         String?
-  noiseLevel                 String?
+  noiseLevel                 Float?
   compatability              String?
   connectionInterface        String?
   writingTechnology          String?
-  volume                     String?
+  volume                     Float?
   builds                     BuildEntity[]
   delegate_aux_baseComponent BaseComponent @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
@@ -177,9 +177,9 @@ model MemoryComponent {
   id                         String        @id()
   manufacturer               String?
   memoryType                 String?
-  memoryFrequence            String?
-  volume                     String?
-  numberOfSlots              String?
+  memoryFrequence            Float?
+  volume                     Float?
+  numberOfSlots              Float?
   timingsSchema              String?
   builds                     BuildEntity[]
   delegate_aux_baseComponent BaseComponent @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -192,10 +192,10 @@ model MotherboardComponent {
   formFactor                 String?
   chipset                    String?
   memoryType                 String?
-  memoryMax                  String?
-  memorySlots                String?
+  memoryMax                  Float?
+  memorySlots                Float?
   physicalDimensions         String?
-  maxFrequencyOfRAM          String?
+  maxFrequencyOfRAM          Float?
   builds                     BuildEntity[]
   delegate_aux_baseComponent BaseComponent @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
@@ -204,8 +204,8 @@ model PowerSupplyComponent {
   id                         String        @id()
   manufacturer               String?
   formFactor                 String?
-  weight                     String?
-  power                      String?
+  weight                     Float?
+  power                      Float?
   physicalDimensions         String?
   specification              String?
   builds                     BuildEntity[]
@@ -215,14 +215,14 @@ model PowerSupplyComponent {
 model SsdComponent {
   id                         String        @id()
   manufacturer               String?
-  volume                     String?
+  volume                     Float?
   serias                     String?
-  readingSpeed               String?
-  writingSpeed               String?
+  readingSpeed               Float?
+  writingSpeed               Float?
   connectionInterface        String?
   physicalDimensions         String?
   formFactor                 String?
-  weight                     String?
+  weight                     Float?
   builds                     BuildEntity[]
   delegate_aux_baseComponent BaseComponent @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
@@ -230,14 +230,14 @@ model SsdComponent {
 model VideoCardComponent {
   id                         String        @id()
   manufacturer               String?
-  volume                     String?
+  volume                     Float?
   memoryType                 String?
   chipset                    String?
   connectionInterface        String?
-  bitCapacityOfTheMemoryBus  String?
-  memoryFrequency            String?
-  coreFrequency              String?
-  connectors                 String?
+  bitCapacityOfTheMemoryBus  Float?
+  memoryFrequency            Float?
+  coreFrequency              Float?
+  connectors                 Float?
   builds                     BuildEntity[]
   delegate_aux_baseComponent BaseComponent @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }

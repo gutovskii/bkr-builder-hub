@@ -1,13 +1,14 @@
-import { Page } from "puppeteer";
+import { Browser } from "puppeteer";
 import { paginateScrapping } from "../../../common/paginateScrapping";
 import { getItboxPaginationConfig } from "../getItboxPaginationConfig";
 import { AbstractItboxComponentScrapper } from "../AbstractItboxComponentScrapper";
 
+
 export class ItboxMemoryComponentScrapper 
     extends AbstractItboxComponentScrapper {
     
-    constructor(private readonly componentPage: Page) {
-        super(componentPage);
+    constructor(private readonly browser: Browser) {
+        super(browser);
     }
 
     public componentBaseUrl = this.baseUrl + '/ua/category/Operativna_pamyat-c8371/';
@@ -15,15 +16,23 @@ export class ItboxMemoryComponentScrapper
 
     async runPaginationScrapping(): Promise<void> {
         await paginateScrapping({
-            ...getItboxPaginationConfig(this.baseUrl, this.componentBaseUrl, this.componentPage),
+            ...getItboxPaginationConfig(this.baseUrl, this.componentBaseUrl, this.browser),
             dbModel: 'memoryComponent',
             getAdditionalData: (characteristics) => {
+                (window as any).parseMeasuring = (value: string | null | undefined): number | null => {
+                    if (!value) return null;
+                    
+                    const regexpResult = value.replace(/,/g, '.').match(/\d+(\.\d+)?/);
+                    if (!regexpResult) return null;
+                    
+                    return value ? Number(regexpResult[0]) : null;
+                }
                 return {
                     manufacturer: characteristics.get("Виробник"),
                     memoryType: characteristics.get("Форм-фактор пам'яті"),
-                    memoryFrequence: characteristics.get("Частота пам'яті"),
-                    volume: characteristics.get("Об'єм пам'яті"),
-                    numberOfSlots: characteristics.get("Кількість модулі у наборі"),
+                    memoryFrequence: (window as any).parseMeasuring(characteristics.get("Частота пам'яті")),
+                    volume: (window as any).parseMeasuring(characteristics.get("Об'єм пам'яті")),
+                    numberOfSlots: (window as any).parseMeasuring(characteristics.get("Кількість модулі у наборі")),
                 };
             },
         });

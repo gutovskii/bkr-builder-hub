@@ -1,20 +1,15 @@
-import puppeteer from "puppeteer-extra";
-import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+import puppeteer from "puppeteer";
 import { AbstractMarketplacesScrapper, BuilderHubScrapper, ItboxScrapper, TouchScrapper, ZhukScrapper } from "./scrappers";
 
-export const MARKETPLACES_COUNT = 2;
+export const MARKETPLACES_COUNT = 3;
 
 async function main() {
-    puppeteer.use(StealthPlugin());
-
     const browser = await puppeteer.launch({ timeout: 0 });
 
-    const page = await browser.newPage();
-
     const marketplacesScrappers: AbstractMarketplacesScrapper[] = [
-        // new TouchScrapper(page),
-        // new ItboxScrapper(page),
-        new ZhukScrapper(page),
+        // new ZhukScrapper(browser),
+        // new TouchScrapper(browser),
+        new ItboxScrapper(browser),
     ];
 
     const builderHubScrapper = new BuilderHubScrapper(marketplacesScrappers);

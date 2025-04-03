@@ -1,4 +1,4 @@
-import { Page } from "puppeteer";
+import { Browser } from "puppeteer";
 
 export abstract class AbstractComponentScrapper {
     public abstract shopName: string;
@@ -7,7 +7,7 @@ export abstract class AbstractComponentScrapper {
     protected abstract componentBaseUrl: string;
     protected abstract currentPage: number;
 
-    public constructor(_: Page) {}
+    public constructor(_: Browser) {}
 
     public abstract runPaginationScrapping(): Promise<void>;
 }

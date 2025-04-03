@@ -1,7 +1,7 @@
 import { MARKETPLACES_COUNT } from "./main";
 import { prisma } from "./prisma";
 
-export const MIN_SIMILARITY_THRESHOLD = 0.925;
+export const MIN_SIMILARITY_THRESHOLD = 0.9;
 
 export const baseComponentFindManyExtension = async ({ args, query }: any) => {
     const componentUnifiedName = args.where.componentUnifiedName;

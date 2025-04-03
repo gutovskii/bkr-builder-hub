@@ -1,13 +1,14 @@
-import { Page } from "puppeteer";
+import { Browser } from "puppeteer";
 import { AbstractZhukComponentScrapper } from "../AbstractZhukComponentScrapper";
 import { paginateScrapping } from "../../../common/paginateScrapping";
 import { getZhukPaginationConfig } from "../getZhukPaginationConfig";
 
+
 export class ZhukCaseComponentScrapper
     extends AbstractZhukComponentScrapper {
 
-    constructor(private readonly componentPage: Page) {
-        super(componentPage);
+    constructor(private readonly browser: Browser) {
+        super(browser);
     }
 
     componentBaseUrl = this.baseUrl + '/korpusi-dlya-pk/';
@@ -15,15 +16,22 @@ export class ZhukCaseComponentScrapper
 
     async runPaginationScrapping(): Promise<void> {
         await paginateScrapping({
-            ...getZhukPaginationConfig(this.baseUrl, this.componentBaseUrl, this.componentPage),
+            ...getZhukPaginationConfig(this.baseUrl, this.componentBaseUrl, this.browser),
             dbModel: 'caseComponent',
-            getAdditionalData: (characteristics, name) => {
+            getAdditionalData: (characteristics, _, name) => {
+                (window as any).parseMeasuring = (value: string | null | undefined): number | null => {
+                    if (!value) return null;
+                    
+                    const regexpResult = value.replace(/,/g, '.').match(/\d+(\.\d+)?/);
+                    if (!regexpResult) return null;
+                    
+                    return value ? Number(regexpResult[0]) : null;
+                }
                 return {
-                    manufacturer: name.split(' ')[1],
-                    maxVideoCardLength: characteristics.get("Максимальна довжина відеокарти"),
+                    maxVideoCardLength: (window as any).parseMeasuring(characteristics.get("Максимальна довжина відеокарти")),
                     motherBoardFormFactors: characteristics.get("Форм-фактор материнської плати"),
                     physicalDimensions: characteristics.get("Габарити"),
-                    maxCoolerHeight: characteristics.get("Максимальна висота кулера ЦП"),
+                    maxCoolerHeight: (window as any).parseMeasuring(characteristics.get("Максимальна висота кулера ЦП")),
                     caseType: characteristics.get("Тип корпуса"),
                     material: characteristics.get("Матеріал"),
                 };

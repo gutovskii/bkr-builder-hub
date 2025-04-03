@@ -1,13 +1,14 @@
-import { Page } from "puppeteer";
+import { Browser } from "puppeteer";
 import { AbstractZhukComponentScrapper } from "../AbstractZhukComponentScrapper";
 import { paginateScrapping } from "../../../common/paginateScrapping";
 import { getZhukPaginationConfig } from "../getZhukPaginationConfig";
 
+
 export class ZhukCoolerComponentScrapper
     extends AbstractZhukComponentScrapper {
 
-    constructor(private readonly componentPage: Page) {
-        super(componentPage);
+    constructor(private readonly browser: Browser) {
+        super(browser);
     }
 
     componentBaseUrl = this.baseUrl + '/sistemi-okholodzhennya-dlya-pk/';
@@ -15,17 +16,24 @@ export class ZhukCoolerComponentScrapper
 
     async runPaginationScrapping(): Promise<void> {
         await paginateScrapping({
-            ...getZhukPaginationConfig(this.baseUrl, this.componentBaseUrl, this.componentPage),
+            ...getZhukPaginationConfig(this.baseUrl, this.componentBaseUrl, this.browser),
             dbModel: 'coolerComponent',
-            getAdditionalData: (characteristics, name) => {
+            getAdditionalData: (characteristics, _, name) => {
+                (window as any).parseMeasuring = (value: string | null | undefined): number | null => {
+                    if (!value) return null;
+                    
+                    const regexpResult = value.replace(/,/g, '.').match(/\d+(\.\d+)?/);
+                    if (!regexpResult) return null;
+                    
+                    return value ? Number(regexpResult[0]) : null;
+                }
                 return {
-                    manufacturer: name.split(' ')[1],
                     warranty: characteristics.get("Гарантія"),
                     sizes: characteristics.get("Додатково"),
-                    maxNoiseLevel: characteristics.get("Максимальний рівень шуму"),
+                    maxNoiseLevel: (window as any).parseMeasuring(characteristics.get("Максимальний рівень шуму")),
                     socket: characteristics.get("Сокет"),
-                    tdp: characteristics.get("Максимальний TDP"),
-                    weight: characteristics.get("Вага"),
+                    tdp: (window as any).parseMeasuring(characteristics.get("Максимальний TDP")),
+                    weight: (window as any).parseMeasuring(characteristics.get("Вага")),
                 };
             },
         });

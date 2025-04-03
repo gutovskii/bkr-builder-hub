@@ -1,11 +1,11 @@
-import { Page } from "puppeteer";
+import { Browser } from "puppeteer";
 import { AbstractMarketplacesScrapper } from "../AbstractMarketplacesScrapper";
 import { getItboxComponentScrappers } from "./getItboxComponentScrappers";
 
 export class ItboxScrapper extends AbstractMarketplacesScrapper {
-    protected componentScrappers = getItboxComponentScrappers(this.page);
+    protected componentScrappers = getItboxComponentScrappers(this.browser);
 
-    constructor(private readonly page: Page) {
+    constructor(private readonly browser: Browser) {
         super();
     }
 

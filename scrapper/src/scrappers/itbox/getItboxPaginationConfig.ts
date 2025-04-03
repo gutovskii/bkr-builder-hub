@@ -1,14 +1,14 @@
-import { Page } from "puppeteer";
+import { Browser } from "puppeteer";
 import { MarketplacePaginationConfig } from "../../common/paginateScrapping";
 import { prisma } from "../../prisma";
 import { ItboxConsts } from "./AbstractItboxComponentScrapper";
 
-export function getItboxPaginationConfig<TModel>(baseUrl: string, componentPageUrl: string, componentPage: Page): MarketplacePaginationConfig<TModel> {
+export function getItboxPaginationConfig<TModel>(baseUrl: string, componentPageUrl: string, browser: Browser): MarketplacePaginationConfig<TModel> {
     return {
         marketplaceName: ItboxConsts.ITBOX_NAME,
         prisma: prisma,
         baseUrl,
-        componentPage,
+        browser,
         getComponentsPageUrl: (pageNumber: number) => {
             return pageNumber === 1 ? componentPageUrl : `${componentPageUrl}/page=${pageNumber}`;
         },
@@ -30,7 +30,7 @@ export function getItboxPaginationConfig<TModel>(baseUrl: string, componentPageU
                 const imgUrls = Array.from(new Set(Array.from(
                     document.querySelectorAll('.product-gallery .stuff-img.slick-slide')
                 ).map(a => a.attributes.getNamedItem('data-img-big').textContent)));
-                const warranty = b.querySelector('.product-warranty-period').textContent.trim();
+                const warranty = b.querySelector('.product-warranty-period')?.textContent?.trim();
 
                 if (price === 0) {
                     return null;
@@ -65,7 +65,12 @@ export function getItboxPaginationConfig<TModel>(baseUrl: string, componentPageU
                 return {
                     ...basicData,
                     ...getAdditionalData(characteristics, name, price),
-                    jsonCharacteristics: JSON.stringify(getAdditionalData(characteristics, name, price)), // todo: wtf,
+                    jsonCharacteristics: JSON.stringify(
+                        Object.entries(getAdditionalData(characteristics, name, price) as Record<string, string | number>)
+                            .map(([key, value]) => (value === null ? null : [key, value])) // Map to either null or key-value pair
+                            .filter(Boolean) // Remove null entries
+                            .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {})
+                    ), // todo: wtf,
                 };
             }, getAdditionalDataStr);
         },

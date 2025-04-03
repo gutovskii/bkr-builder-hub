@@ -1,14 +1,14 @@
-import { Page } from "puppeteer";
+import { Browser } from "puppeteer";
 import { MarketplacePaginationConfig } from "../../common/paginateScrapping";
 import { prisma } from "../../prisma";
 import { ZhukConsts } from "./AbstractZhukComponentScrapper";
 
-export function getZhukPaginationConfig<TModel>(baseUrl: string, componentPageUrl: string, componentPage: Page): MarketplacePaginationConfig<TModel> {
+export function getZhukPaginationConfig<TModel>(baseUrl: string, componentPageUrl: string, browser: Browser): MarketplacePaginationConfig<TModel> {
     return {
         marketplaceName: ZhukConsts.ZHUK_NAME,
         prisma: prisma,
         baseUrl,
-        componentPage,
+        browser,
         getComponentsPageUrl: (pageNumber: number) => {
             return pageNumber === 1 ? componentPageUrl : `${componentPageUrl}filter/page=${pageNumber}/`;
         },
@@ -59,11 +59,16 @@ export function getZhukPaginationConfig<TModel>(baseUrl: string, componentPageUr
                 };
 
                 const getAdditionalData = new Function("return " + getAdditionalDataStr)();
-
+                
                 return {
                     ...basicData,
                     ...getAdditionalData(characteristics, name, price),
-                    jsonCharacteristics: JSON.stringify(getAdditionalData(characteristics, name, price)), // todo: wtf,
+                    jsonCharacteristics: JSON.stringify(
+                        Object.entries(getAdditionalData(characteristics, name, price) as Record<string, string | number>)
+                            .map(([key, value]) => (value === null ? null : [key, value])) // Map to either null or key-value pair
+                            .filter(Boolean) // Remove null entries
+                            .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {})
+                    ), // todo: wtf,
                 };
             }, getAdditionalDataStr);
         }

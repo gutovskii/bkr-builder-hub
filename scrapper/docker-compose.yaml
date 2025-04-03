@@ -6,11 +6,37 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: mydatabase
+      POSTGRES_DB: BuilderHub
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+  scrapper:
+    build: .
+    container_name: scrapper_app
+    restart: always
+    environment:
+      - DATABASE_URL="postgresql://postgres:mypassword@postgres:5432/BuilderHub?schema=public"
+    depends_on:
+      - postgres
+    volumes:
+      - .:/app
+
 volumes:
   postgres_data:
+  pgadmin_data:

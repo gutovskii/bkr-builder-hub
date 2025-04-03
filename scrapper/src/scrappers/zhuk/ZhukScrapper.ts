@@ -1,11 +1,11 @@
-import { Page } from "puppeteer";
+import { Browser } from "puppeteer";
 import { AbstractMarketplacesScrapper } from "../AbstractMarketplacesScrapper";
 import { getZhukComponentScrappers } from "./getZhukComponentScrappers";
 
 export class ZhukScrapper extends AbstractMarketplacesScrapper {
-    protected componentScrappers = getZhukComponentScrappers(this.page);
+    protected componentScrappers = getZhukComponentScrappers(this.browser);
     
-    constructor(private readonly page: Page) {
+    constructor(private readonly browser: Browser) {
         super();
     }
 

@@ -1,15 +1,15 @@
-import { Page } from "puppeteer";
+import { Browser } from "puppeteer";
 import { TouchCaseComponentScrapper, TouchCoolerComponentScrapper, TouchCpuComponentScrapper, TouchHddComponentScrapper, TouchMemoryComponentScrapper, TouchMotherboardComponentScrapper, TouchPowerSupplyComponentScrapper, TouchSsdComponentScrapper, TouchVideoCardComponentScrapper } from "./componentScrappers";
 import { AbstractTouchComponentScrapper } from "./AbstractTouchComponentScrapper";
 
-export const getTouchComponentScrappers = (page: Page): AbstractTouchComponentScrapper[] => [
-    new TouchCpuComponentScrapper(page),
-    new TouchCaseComponentScrapper(page),
-    new TouchCoolerComponentScrapper(page),
-    new TouchHddComponentScrapper(page),
-    new TouchMemoryComponentScrapper(page),
-    new TouchMotherboardComponentScrapper(page),
-    new TouchPowerSupplyComponentScrapper(page),
-    new TouchSsdComponentScrapper(page),
-    new TouchVideoCardComponentScrapper(page),
+export const getTouchComponentScrappers = (browser: Browser): AbstractTouchComponentScrapper[] => [
+    // new TouchCpuComponentScrapper(browser),
+    // new TouchCaseComponentScrapper(browser),
+    // new TouchCoolerComponentScrapper(browser),
+    // new TouchHddComponentScrapper(browser),
+    // new TouchMemoryComponentScrapper(browser),
+    // new TouchMotherboardComponentScrapper(browser),
+    // new TouchPowerSupplyComponentScrapper(browser), //*
+    // new TouchSsdComponentScrapper(browser),
+    new TouchVideoCardComponentScrapper(browser),
 ];

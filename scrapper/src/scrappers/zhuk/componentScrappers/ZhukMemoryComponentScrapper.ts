@@ -1,13 +1,14 @@
-import { Page } from "puppeteer";
+import { Browser } from "puppeteer";
 import { AbstractZhukComponentScrapper } from "../AbstractZhukComponentScrapper";
 import { paginateScrapping } from "../../../common/paginateScrapping";
 import { getZhukPaginationConfig } from "../getZhukPaginationConfig";
 
+
 export class ZhukMemoryComponentScrapper
     extends AbstractZhukComponentScrapper {
 
-    constructor(private readonly componentPage: Page) {
-        super(componentPage);
+    constructor(private readonly browser: Browser) {
+        super(browser);
     }
 
     componentBaseUrl = this.baseUrl + '/operativna-pamyat/';
@@ -15,16 +16,23 @@ export class ZhukMemoryComponentScrapper
 
     async runPaginationScrapping(): Promise<void> {
         await paginateScrapping({
-            ...getZhukPaginationConfig(this.baseUrl, this.componentBaseUrl, this.componentPage),
+            ...getZhukPaginationConfig(this.baseUrl, this.componentBaseUrl, this.browser),
             dbModel: 'memoryComponent',
-            getAdditionalData: (characteristics, name) => {
+            getAdditionalData: (characteristics, _, name) => {
+                (window as any).parseMeasuring = (value: string | null | undefined): number | null => {
+                    if (!value) return null;
+                    
+                    const regexpResult = value.replace(/,/g, '.').match(/\d+(\.\d+)?/);
+                    if (!regexpResult) return null;
+                    
+                    return value ? Number(regexpResult[0]) : null;
+                }
                 return {
-                    manufacturer: name.split(' ')[1],
                     warranty: characteristics.get("Гарантія"),
                     memoryType: characteristics.get("Тип пам'яті"),
-                    memoryFrequence: characteristics.get("Частота пам'яті"),
-                    volume: characteristics.get("Обсяг пам'яті"),
-                    numberOfSlots: characteristics.get("Кількість планок"),
+                    memoryFrequence: (window as any).parseMeasuring(characteristics.get("Частота пам'яті")),
+                    volume: (window as any).parseMeasuring(characteristics.get("Обсяг пам'яті")),
+                    numberOfSlots: (window as any).parseMeasuring(characteristics.get("Кількість планок")),
                     timingsSchema: characteristics.get("Схема таймінгів пам'яті"),
                 };
             },

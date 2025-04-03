@@ -1,11 +1,11 @@
-import { Page } from "puppeteer";
+import { Browser } from "puppeteer";
 import { AbstractMarketplacesScrapper } from "../AbstractMarketplacesScrapper";
 import { getTouchComponentScrappers } from "./getTouchComponentScrappers";
 
 export class TouchScrapper extends AbstractMarketplacesScrapper {
-    protected componentScrappers = getTouchComponentScrappers(this.page);
+    protected componentScrappers = getTouchComponentScrappers(this.browser);
 
-    constructor(private readonly page: Page) {
+    constructor(private readonly browser: Browser) {
         super();
     }
 

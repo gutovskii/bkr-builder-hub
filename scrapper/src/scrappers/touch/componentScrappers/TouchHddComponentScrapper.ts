@@ -1,13 +1,14 @@
-import { Page } from "puppeteer";
+import { Browser } from "puppeteer";
 import { AbstractTouchComponentScrapper, TouchConsts } from "../AbstractTouchComponentScrapper";
 import { paginateScrapping } from "../../../common/paginateScrapping";
 import { getTouchPaginationConfig } from "../getTouchPaginationConfig";
 
+
 export class TouchHddComponentScrapper 
     extends AbstractTouchComponentScrapper {
     
-    constructor(private readonly componentPage: Page) {
-        super(componentPage);
+    constructor(private readonly browser: Browser) {
+        super(browser);
     }
 
     public componentBaseUrl = this.baseUrl + '/ua/zhestkie-diski-kompl/?PAGEN_1=';
@@ -15,19 +16,27 @@ export class TouchHddComponentScrapper
 
     async runPaginationScrapping(): Promise<void> {
         await paginateScrapping({
-            ...getTouchPaginationConfig(this.baseUrl, this.componentBaseUrl, this.componentPage),
+            ...getTouchPaginationConfig(this.baseUrl, this.componentBaseUrl, this.browser),
             dbModel: 'hddComponent',
             getAdditionalData: (characteristics) => {
+                (window as any).parseMeasuring = (value: string | null | undefined): number | null => {
+                    if (!value) return null;
+                    
+                    const regexpResult = value.replace(/,/g, '.').match(/\d+(\.\d+)?/);
+                    if (!regexpResult) return null;
+                    
+                    return value ? Number(regexpResult[0]) : null;
+                }
                 return {
                     manufacturer: characteristics.get("Бренд"),
-                    maxRotationSpeed: characteristics.get("Максимальна швидкість обертання"),
-                    weight: characteristics.get("Вага"),
+                    maxRotationSpeed: (window as any).parseMeasuring(characteristics.get("Максимальна швидкість обертання")),
+                    weight: (window as any).parseMeasuring(characteristics.get("Вага")),
                     physicalDimensions: characteristics.get("Розміри"),
-                    noiseLevel: characteristics.get("Рівень шуму"),
+                    noiseLevel: (window as any).parseMeasuring(characteristics.get("Рівень шуму")),
                     connectionInterface: characteristics.get("Інтерфейс підключення"),
                     writingTechnology: characteristics.get("Технологія запису"),
                     formFactor: characteristics.get("Форм-фактор"),
-                    volume: characteristics.get("Об'єм накопичувача"),
+                    volume: (window as any).parseMeasuring(characteristics.get("Об'єм накопичувача")),
                     // serias, compatability
                 };
             },

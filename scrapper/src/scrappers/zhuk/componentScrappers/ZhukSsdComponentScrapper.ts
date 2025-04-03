@@ -1,13 +1,14 @@
-import { Page } from "puppeteer";
+import { Browser } from "puppeteer";
 import { AbstractZhukComponentScrapper } from "../AbstractZhukComponentScrapper";
 import { paginateScrapping } from "../../../common/paginateScrapping";
 import { getZhukPaginationConfig } from "../getZhukPaginationConfig";
 
+
 export class ZhukSsdComponentScrapper
     extends AbstractZhukComponentScrapper {
 
-    constructor(private readonly componentPage: Page) {
-        super(componentPage);
+    constructor(private readonly browser: Browser) {
+        super(browser);
     }
 
     componentBaseUrl = this.baseUrl + '/vnutrishniy-ssd/';
@@ -15,19 +16,26 @@ export class ZhukSsdComponentScrapper
 
     async runPaginationScrapping(): Promise<void> {
         await paginateScrapping({
-            ...getZhukPaginationConfig(this.baseUrl, this.componentBaseUrl, this.componentPage),
+            ...getZhukPaginationConfig(this.baseUrl, this.componentBaseUrl, this.browser),
             dbModel: 'ssdComponent',
-            getAdditionalData: (characteristics, name) => {
+            getAdditionalData: (characteristics, _, name) => {
+                (window as any).parseMeasuring = (value: string | null | undefined): number | null => {
+                    if (!value) return null;
+                    
+                    const regexpResult = value.replace(/,/g, '.').match(/\d+(\.\d+)?/);
+                    if (!regexpResult) return null;
+                    
+                    return value ? Number(regexpResult[0]) : null;
+                }
                 return {
-                    manufacturer: name.split(' ')[1],
                     warranty: characteristics.get('Гарантія'),
-                    volume: characteristics.get("Місткість накопичувача"),
-                    readingSpeed: characteristics.get("Максимальна швидкість читання"),
-                    writingSpeed: characteristics.get("Максимальна швидкість запису"),
+                    volume: (window as any).parseMeasuring(characteristics.get("Місткість накопичувача")),
+                    readingSpeed: (window as any).parseMeasuring(characteristics.get("Максимальна швидкість читання")),
+                    writingSpeed: (window as any).parseMeasuring(characteristics.get("Максимальна швидкість запису")),
                     connectionInterface: characteristics.get("Інтерфейс"),
                     physicalDimensions: characteristics.get("Розміри"),
                     formFactor: characteristics.get("Форм-фактор"),
-                    weight: characteristics.get("Вага"),
+                    weight: (window as any).parseMeasuring(characteristics.get("Вага")),
                     // serias
                 };
             },

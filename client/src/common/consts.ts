@@ -1,0 +1,1 @@
+export const NO_IMAGE_SRC="https://png.pngtree.com/png-vector/20221125/ourmid/pngtree-icon-of-unavailable-image-illustration-in-vector-with-flat-design-vector-png-image_40969994.jpg";
