@@ -29,7 +29,7 @@ export default function BuildsList() {
     }, [search.page]);
 
     return <div className='flex flex-col justify-center'>
-        {query.isFetching ? <Spin /> : <div>
+        {query.isFetching ? <Spin /> : <div className="p-5 flex w-full flex-wrap justify-start">
             {query.data?.results.map((result: any) => {
                 return <BuildItem key={result.id} data={result} /> 
             })}

@@ -39,6 +39,8 @@ export class ComponentsExistPipe implements PipeTransform {
   constructor(@Inject(ENHANCED_PRISMA) private readonly prisma: PrismaClient) {}
 
   async transform(buildDto: CreateBuildDto): Promise<CreateFullBuildDto> {
+    console.log(buildDto);
+
     const fullBuildDto: CreateFullBuildDto = {
       name: buildDto.name,
       price: buildDto.price,
@@ -66,7 +68,9 @@ export class ComponentsExistPipe implements PipeTransform {
       fullBuildDto.cpu = cpu;
     }
 
-    if (buildDto.ssdsIds && buildDto.ssdsIds.length) {
+    if (typeof buildDto.ssdsIds === 'string')
+      buildDto.ssdsIds = [buildDto.ssdsIds];
+    if (Array.isArray(buildDto.ssdsIds) && buildDto.ssdsIds.length) {
       const ssds = await Promise.all(
         buildDto.ssdsIds.map((ssdId) =>
           this.prisma.ssdComponent.findFirst({
@@ -80,7 +84,9 @@ export class ComponentsExistPipe implements PipeTransform {
       fullBuildDto.ssds = ssds;
     }
 
-    if (buildDto.hddsIds && buildDto.hddsIds.length) {
+    if (typeof buildDto.hddsIds === 'string')
+      buildDto.hddsIds = [buildDto.hddsIds];
+    if (Array.isArray(buildDto.hddsIds) && buildDto.hddsIds.length) {
       const hdds = await Promise.all(
         buildDto.hddsIds.map((hddId) =>
           this.prisma.hddComponent.findFirst({
@@ -94,7 +100,9 @@ export class ComponentsExistPipe implements PipeTransform {
       fullBuildDto.hdds = hdds;
     }
 
-    if (buildDto.memoriesIds && buildDto.memoriesIds.length) {
+    if (typeof buildDto.memoriesIds === 'string')
+      buildDto.memoriesIds = [buildDto.memoriesIds];
+    if (Array.isArray(buildDto.memoriesIds) && buildDto.memoriesIds.length) {
       const memories = await Promise.all(
         buildDto.memoriesIds.map((memoryId) =>
           this.prisma.memoryComponent.findFirst({
@@ -108,7 +116,12 @@ export class ComponentsExistPipe implements PipeTransform {
       fullBuildDto.memories = memories;
     }
 
-    if (buildDto.videoCardsIds && buildDto.videoCardsIds.length) {
+    if (typeof buildDto.videoCardsIds === 'string')
+      buildDto.videoCardsIds = [buildDto.videoCardsIds];
+    if (
+      Array.isArray(buildDto.videoCardsIds) &&
+      buildDto.videoCardsIds.length
+    ) {
       const videoCards = await Promise.all(
         buildDto.videoCardsIds.map((videoCardId) =>
           this.prisma.videoCardComponent.findFirst({
@@ -122,7 +135,9 @@ export class ComponentsExistPipe implements PipeTransform {
       fullBuildDto.videoCards = videoCards;
     }
 
-    if (buildDto.coolersIds && buildDto.coolersIds.length) {
+    if (typeof buildDto.coolersIds === 'string')
+      buildDto.coolersIds = [buildDto.coolersIds];
+    if (Array.isArray(buildDto.coolersIds) && buildDto.coolersIds.length) {
       const coolers = await Promise.all(
         buildDto.coolersIds.map((coolerId) =>
           this.prisma.coolerComponent.findFirst({
@@ -136,7 +151,12 @@ export class ComponentsExistPipe implements PipeTransform {
       fullBuildDto.coolers = coolers;
     }
 
-    if (buildDto.powerSuppliesIds && buildDto.powerSuppliesIds.length) {
+    if (typeof buildDto.powerSuppliesIds === 'string')
+      buildDto.powerSuppliesIds = [buildDto.powerSuppliesIds];
+    if (
+      Array.isArray(buildDto.powerSuppliesIds) &&
+      buildDto.powerSuppliesIds.length
+    ) {
       const powerSupplies = await Promise.all(
         buildDto.powerSuppliesIds.map((powerSupplyId) =>
           this.prisma.powerSupplyComponent.findFirst({
@@ -150,7 +170,9 @@ export class ComponentsExistPipe implements PipeTransform {
       fullBuildDto.powerSupplies = powerSupplies;
     }
 
-    if (buildDto.casesIds && buildDto.casesIds.length) {
+    if (typeof buildDto.casesIds === 'string')
+      buildDto.casesIds = [buildDto.casesIds];
+    if (Array.isArray(buildDto.casesIds) && buildDto.casesIds.length) {
       const cases = await Promise.all(
         buildDto.casesIds.map((caseId) =>
           this.prisma.caseComponent.findFirst({

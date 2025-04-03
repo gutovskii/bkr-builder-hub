@@ -5,7 +5,7 @@ import { createRoute } from "@tanstack/react-router";
 import { Layout } from "antd";
 import { Content } from "antd/es/layout/layout";
 
-export const buildPageRoute = createRoute({
+export const buildDetailsPageRoute = createRoute({
     path: '/builds/$buildId',
     getParentRoute: () => rootRoute,
     component: BuildDetailsPage,

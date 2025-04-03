@@ -67,4 +67,13 @@ export class BuildController {
   deleteBuild(@Param('id', ParseUUIDPipe) id: string) {
     return this.buildService.delete(id);
   }
+
+  @Post()
+  @UseGuards(AuthGuard)
+  saveBuild(
+    @Body() { buildId }: { buildId: string },
+    @User() user: UserPayload,
+  ) {
+    return this.buildService.saveBuild(user.id, buildId);
+  }
 }

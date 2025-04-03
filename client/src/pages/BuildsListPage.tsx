@@ -24,8 +24,8 @@ export const buildsListPageRoute = createRoute({
 export default function BuildsListPage() {
     return <div>
         <LayoutHeader />
-        <BuildsFiltersSider />
         <Layout>
+            <BuildsFiltersSider />
             <Content
                 style={{
                     padding: 24,

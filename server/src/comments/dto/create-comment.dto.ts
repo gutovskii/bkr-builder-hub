@@ -1,6 +1,6 @@
 export class CreateCommentDto {
-  rating: number;
   text: string;
+  rating?: number;
   buildId: string;
   userId: string;
 }

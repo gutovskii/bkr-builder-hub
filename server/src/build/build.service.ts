@@ -119,8 +119,6 @@ export class BuildService {
       buildFilters.filters.push(buildPriceFilters);
     }
 
-    console.log(buildFilters);
-
     await this.prisma.buildsFilters.update({
       where: { buildsFiltersKey: BUILDS_FILTER_KEY },
       data: buildFilters,
@@ -133,15 +131,21 @@ export class BuildService {
     return this.prisma.buildEntity.findUnique({
       where: { id },
       include: {
-        cpu: true,
-        cases: true,
-        videoCards: true,
-        ssds: true,
-        memories: true,
-        motherBoard: true,
-        hdds: true,
-        powerSupplies: true,
-        coolers: true,
+        user: true,
+        buildComments: {
+          include: {
+            user: true,
+          },
+        },
+        cpu: { include: { marketplacesComponents: true } },
+        cases: { include: { marketplacesComponents: true } },
+        videoCards: { include: { marketplacesComponents: true } },
+        ssds: { include: { marketplacesComponents: true } },
+        memories: { include: { marketplacesComponents: true } },
+        motherBoard: { include: { marketplacesComponents: true } },
+        hdds: { include: { marketplacesComponents: true } },
+        powerSupplies: { include: { marketplacesComponents: true } },
+        coolers: { include: { marketplacesComponents: true } },
       },
     });
   }
@@ -185,5 +189,16 @@ export class BuildService {
       totalCount,
       page: pagination.page,
     };
+  }
+
+  async saveBuild(userId: string, buildId: string) {
+    return this.prisma.userEntity.update({
+      where: { id: userId },
+      data: {
+        savedBuilds: {
+          connect: { id: buildId },
+        },
+      },
+    });
   }
 }

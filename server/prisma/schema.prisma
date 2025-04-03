@@ -37,13 +37,15 @@ model UserEntity {
 }
 
 model BuildComment {
-  id      String      @id() @default(uuid())
-  text    String
-  rating  Float
-  user    UserEntity  @relation(fields: [userId], references: [id])
-  userId  String
-  build   BuildEntity @relation(fields: [buildId], references: [id])
-  buildId String
+  id        String      @id() @default(uuid())
+  text      String
+  rating    Float?
+  user      UserEntity  @relation(fields: [userId], references: [id])
+  userId    String
+  build     BuildEntity @relation(fields: [buildId], references: [id])
+  buildId   String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime?   @updatedAt()
 }
 
 model BuildEntity {

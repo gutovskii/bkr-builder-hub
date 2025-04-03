@@ -22,5 +22,11 @@ export const buildService = {
     },
     async findFilters() {
         return (await axiosInstance.get('/filters/builds')).data;
+    },
+    async createComment(values: any) {
+        return (await axiosInstance.post('/comments', values)).data;
+    },
+    async deleteComment(commentId: string) {
+        return (await axiosInstance.delete(`/comments/${commentId}`)).data;
     }
 };

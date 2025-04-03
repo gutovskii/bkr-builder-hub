@@ -10,7 +10,7 @@ import { jwtDecode } from "jwt-decode";
 
 const items: MenuProps['items'] = [{
     key: 'components',
-    label: 'Components',
+    label: 'Компоненти',
     children: [
         { key: 'cpu', label: 'CPU', onClick: () => { 
             router.navigate({ to: '/components/$componentType', params: {componentType: 'cpuComponent'}, search: {page: 1, filters: {}} }) 
@@ -42,11 +42,11 @@ const items: MenuProps['items'] = [{
     ]
 }, {
     key: 'create build',
-    label: 'Create build',
+    label: 'Створити збірку',
     onClick: () => router.navigate({ to: '/builds/create' })
 }, {
     key: 'users builds',
-    label: 'Users builds',
+    label: 'Готові збірки',
     onClick: () => router.navigate({ to: '/builds' })
 }];
 
@@ -98,14 +98,14 @@ export default function LayoutHeader() {
                 theme="dark"
                 mode="horizontal"
                 items={items}
+                className="min-w-[1000px]"
             />
         </div>
         <div>
             { user ? 
                 <Dropdown menu={{ items: userDropdownItems }} >
                     <div className="flex gap-2 items-center cursor-pointer" onClick={() => navigate({ to: '/profile' })}> 
-                        {/* todo onClick to profile/me */}
-                        <p className="text-white">Hello, {user.nickname}</p>
+                        <p className="text-white">Привіт, {user.nickname}</p>
                         {user.avatarUrl ? <Avatar src={user.avatarUrl} /> : <UserOutlined style={{fill: '#fff'}} />}
                     </div>
                 </Dropdown> : 
