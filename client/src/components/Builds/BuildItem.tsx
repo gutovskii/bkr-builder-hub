@@ -16,7 +16,7 @@ export default function BuildItem({ data, deleteBuild, unsaveBuild }: any) {
             return buildService.saveBuild(buildId);
         },
         onSuccess() {
-            message.success('Build saved successfully!');
+            message.success('Збірка збережена!');
         },
     });
 
@@ -64,9 +64,9 @@ export default function BuildItem({ data, deleteBuild, unsaveBuild }: any) {
                         <>
                             <div className="min-h-[25px]">
                                 <div>
-                                    Користувач: <Link to="/users/$nickname" params={{nickname: data.user.nickname}}>
-                                        <Typography.Text>{data.user.nickname}</Typography.Text>
-                                    </Link>
+                                    Користувач: {user ? <Link to="/users/$nickname" params={{nickname: data.user.nickname}} className="text-blue-500">
+                                        {data.user.nickname}
+                                    </Link> : <Typography.Text>{data.user.nickname}</Typography.Text>}
                                 </div>
                                 <div>
                                     Ціна: <Typography.Text>{data.price} ₴</Typography.Text>

@@ -4,7 +4,7 @@ import { useStore } from "@/store/store";
 import type { UserPayload } from "@/types";
 import { BuildOutlined, LogoutOutlined, ProfileOutlined, SaveOutlined, UserOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Avatar, Button, Dropdown, Menu, Typography, type MenuProps } from "antd";
+import { Avatar, Button, Dropdown, Menu, type MenuProps } from "antd";
 import { Header } from "antd/es/layout/layout";
 import { jwtDecode } from "jwt-decode";
 
@@ -39,23 +39,26 @@ const items: MenuProps['items'] = [{
         { key: 'case', label: 'Кейси', onClick: () => { 
             router.navigate({ to: '/components/$componentType', params: {componentType: 'caseComponent'}, search: {page: 1, filters: {}}}) 
         }},
-    ]
-}, {
-    key: 'create build',
-    label: 'Створити збірку',
-    onClick: () => router.navigate({ to: '/builds/create' })
-}, {
-    key: 'users builds',
-    label: 'Готові збірки',
-    onClick: () => router.navigate({ to: '/builds' })
-}];
+    ]}, 
+    {
+        key: 'users builds',
+        label: 'Готові збірки',
+        onClick: () => router.navigate({ to: '/builds' })
+    }, 
+    {
+        key: 'create build',
+        label: 'Створити збірку',
+        onClick: () => router.navigate({ to: '/builds/create' }),
+        className: 'bg-blue-300 !text-black hover:!text-white'
+    }
+];
 
 const userDropdownItems: MenuProps['items'] = [
     {
         key: 1,
         icon: <ProfileOutlined />,
         label: 'Мій профіль',
-        onClick: () => router.navigate({ to: '/profile' }),
+        onClick: () => router.navigate({ to: '/users/$nickname', params: {nickname: jwtDecode<UserPayload>(localStorage.getItem('token')!).nickname} }),
     },
     {
         key: 2,
@@ -91,25 +94,26 @@ export default function LayoutHeader() {
         }
     }
 
-    return <Header className="flex items-center justify-between">
+    return <Header className="flex justify-between items-center !pl-3">
         <div className="flex items-center">
-            <div>
+            <div className="min-w-[200px]">
                 <Link to="/components">
-                    <Typography.Title style={{color: 'white'}}>BUILDER HUB</Typography.Title>
+                    <p className="no-underline text-white text-3xl">BUILDER HUB</p>
                 </Link>
             </div>
-            <Menu
-                theme="dark"
-                mode="horizontal"
-                items={items}
-                className="min-w-[1000px]"
-            />
+            <div className="min-w-auto md:min-w-[400px]">
+                <Menu
+                    theme="dark"
+                    mode="horizontal"
+                    items={items}
+                />
+            </div>
         </div>
         <div>
-            { user ? 
+            {user ? 
                 <Dropdown menu={{ items: userDropdownItems }} >
-                    <div className="flex gap-2 items-center cursor-pointer" onClick={() => navigate({ to: '/profile' })}> 
-                        <p className="text-white">Привіт, {user.nickname}</p>
+                    <div className="flex gap-2 items-center cursor-pointer" onClick={() => navigate({ to: '/users/$nickname', params: {nickname: jwtDecode<UserPayload>(localStorage.getItem('token')!).nickname} })}> 
+                        <p className="hidden md:block text-white">Привіт, {user.nickname}</p>
                         {user.avatarUrl ? <Avatar src={user.avatarUrl} /> : <UserOutlined style={{fill: '#fff'}} />}
                     </div>
                 </Dropdown> : 

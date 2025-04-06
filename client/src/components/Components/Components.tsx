@@ -1,7 +1,6 @@
 import { componentTypeToUkranian } from "@/common/helpers";
-import { router } from "@/main";
 import { Link } from "@tanstack/react-router";
-import { Card, List, Typography } from "antd";
+import { Card, Typography } from "antd";
 
 export default function Components() {
     const componentsConfig = [

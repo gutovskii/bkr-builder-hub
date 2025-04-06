@@ -33,7 +33,7 @@ export const rootRoute = createRootRoute({
   component: () => (
     <>
       <Outlet />
-      <TanStackRouterDevtools />
+      <TanStackRouterDevtools position='top-left' />
       <ReactQueryDevtools initialIsOpen={true} />
     </>
   ),

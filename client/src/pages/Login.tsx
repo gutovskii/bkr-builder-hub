@@ -1,9 +1,11 @@
 import { createRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Form, Input, Button, Typography } from 'antd';
+import { Form, Input, Button, Typography, message } from 'antd';
 import { rootRoute } from "@/main";
 import { useMutation } from "@tanstack/react-query";
 import { authService } from "@/services/auth.service";
 import { useStore } from "@/store/store";
+import type { AxiosError } from 'axios';
+import type { NestError } from "@/types";
 
 export const loginRoute = createRoute({
     getParentRoute: () => rootRoute,
@@ -28,6 +30,9 @@ export default function Login() {
             setUser(data);
             navigate({ to: '/components/$componentType', params: {componentType: 'cpuComponent'} }); // todo
         },
+        onError(error: AxiosError<NestError>) {
+            message.error(error.response?.data.message, 3);
+        },
     });
 
     const onFinish = async (values: LoginValues) => {
@@ -35,7 +40,7 @@ export default function Login() {
     }
 
     return (
-        <div className="flex justify-center w-full items-center h-[100vh] gap-10">
+        <div className="flex flex-col md:flex-row justify-center w-full items-center h-[100vh] gap-10">
             <Typography.Title color="white">BUILDER HUB</Typography.Title>
             <Form
                 name="login"
@@ -44,29 +49,29 @@ export default function Login() {
                 className="min-w-[90%] md:min-w-[50%] lg:min-w-[25%]"
             >
                 <Form.Item
-                    label="Nickname"
+                    label="Нікнейм"
                     name="nickname"
-                    rules={[{ required: true, message: 'Please enter your nickname!'}]}
+                    rules={[{ required: true, message: 'Уведіть свій нікнейм'}]}
                 >
-                    <Input placeholder="Enter nickname" />
+                    <Input placeholder="Уведіть нікнейм" />
                 </Form.Item>
 
                 <Form.Item
-                    label="Password"
+                    label="Пароль"
                     name="password"
-                    rules={[{ required: true, message: 'Please enter your password!'}]}
+                    rules={[{ required: true, message: 'Уведіть свій пароль!'}]}
                 >
-                    <Input.Password placeholder="Enter password" />
+                    <Input.Password placeholder="Уведіть пароль" />
                 </Form.Item>
 
                 <Form.Item>
                     <Button type="primary" htmlType="submit" loading={mutation.isPending}>
-                        Login
+                        Увійти
                     </Button>
                 </Form.Item>
 
                 <Typography.Text>
-                    Do not have an account? <Link to="/register" className="text-blue-500">Register!</Link>
+                    Не маєте облікового запису? <Link to="/register" className="text-blue-500">Зареєструйтесь!</Link>
                 </Typography.Text>
             </Form>
         </div>

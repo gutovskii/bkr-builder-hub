@@ -132,6 +132,7 @@ export class BuildService {
       include: {
         user: true,
         buildComments: {
+          orderBy: { createdAt: 'desc' },
           include: {
             user: true,
           },

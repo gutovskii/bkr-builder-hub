@@ -11,6 +11,7 @@ import * as uuid from 'uuid';
 import { UserPayload } from './user.payload';
 import { AwsService } from 'src/aws/aws.service';
 import { PrismaClient } from '@zenstackhq/runtime';
+import { formatDate } from 'src/common/helpers';
 
 @Injectable()
 export class AuthService {
@@ -47,6 +48,7 @@ export class AuthService {
       email: user.email,
       isAdmin: user.isAdmin,
       avatarUrl: user.avatarUrl,
+      createdAt: formatDate(user.createdAt),
     };
 
     const token = jwt.sign(payload, this.key, { expiresIn: '1d' });
@@ -58,8 +60,9 @@ export class AuthService {
     const user = await this.prismaService.userEntity.findFirst({
       where: { nickname },
     });
+
     if (!user || !(await bcrypt.compare(password, user.hashPassword))) {
-      throw new BadRequestException('Invalid credentials');
+      throw new BadRequestException('Недійсні облікові дані');
     }
 
     const payload: UserPayload = {
@@ -68,6 +71,7 @@ export class AuthService {
       email: user.email,
       isAdmin: user.isAdmin,
       avatarUrl: user.avatarUrl,
+      createdAt: formatDate(user.createdAt),
     };
 
     const token = jwt.sign(payload, this.key, { expiresIn: '1d' });
@@ -84,6 +88,6 @@ export class AuthService {
       throw new NotFoundException(`User with id: ${id} not found`);
     }
 
-    return user;
+    return { ...user, createdAt: formatDate(user.createdAt) };
   }
 }

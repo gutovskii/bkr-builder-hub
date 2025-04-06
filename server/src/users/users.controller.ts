@@ -1,7 +1,15 @@
-import { Controller, Get, Inject, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Inject,
+  NotFoundException,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
 import { PrismaClient } from '@zenstackhq/runtime';
 import { ENHANCED_PRISMA } from '@zenstackhq/server/nestjs';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { formatDate } from 'src/common/helpers';
 
 @Controller('users')
 export class UsersController {
@@ -12,8 +20,8 @@ export class UsersController {
 
   @Get(':nickname')
   @UseGuards(AuthGuard)
-  findOne(@Param('nickname') nickname: string) {
-    return this.prisma.userEntity.findFirst({
+  async findOne(@Param('nickname') nickname: string) {
+    const user = await this.prisma.userEntity.findFirst({
       where: { nickname },
       include: {
         createdBuilds: {
@@ -22,5 +30,11 @@ export class UsersController {
         },
       },
     });
+
+    if (!user) {
+      throw new NotFoundException(`User with nickname ${nickname} not found`);
+    }
+
+    return { ...user, createdAt: formatDate(user.createdAt) };
   }
 }

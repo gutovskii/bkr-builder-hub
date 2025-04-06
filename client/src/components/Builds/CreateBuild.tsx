@@ -83,68 +83,73 @@ export default function CreateBuild() {
         createBuildMutation.mutate(formData);
     }
 
-    return <div>
+    return <div className="flex flex-col md:flex-row w-full">
         {user && 
-            <div className="flex gap-2 items-center">
-                <Form
-                    form={form}
-                    layout="vertical"
-                    onFinish={createBuild}
-                    className="w-[500px]"
-                >
-                    <Form.Item
-                        label="Назва збірки"
-                        name="name"
-                        rules={[{required: true, message: 'Уведіть назву збірки'}]}
+            <div className="w-full md:w-1/3 p-3">
+                <div className="flex">
+                    <Form
+                        form={form}
+                        layout="vertical"
+                        onFinish={createBuild}
+                        className="w-[500px]"
                     >
-                        <Input className="max-w-[300px]" />
-                    </Form.Item>
+                        <Form.Item
+                            label="Назва збірки"
+                            name="name"
+                            rules={[{required: true, message: 'Уведіть назву збірки'}]}
+                        >
+                            <Input className="max-w-[300px]" />
+                        </Form.Item>
 
-                    <Form.Item
-                        label="Опис"
-                        name="description"
-                        rules={[{max: 1000000, message: 'Максимум 1 мільйон символів'}]}
-                    >
-                        <TextArea />
-                    </Form.Item>
-                    
-                    <Form.Item
-                        label="Фото збірки"
-                        name="imgs"
-                    >
-                        <ImgCrop rotationSlider quality={0.4}>
-                            <Upload
-                                maxCount={10}
-                                listType="picture-card"
-                                beforeUpload={() => false}
-                                onChange={handleBuildImgUpload}
-                                onRemove={handleBuildImgRemove}
-                                fileList={buildImgs}
-                            >
-                                {buildImgs.length < 10 && '+ Upload'}
-                            </Upload>
-                        </ImgCrop>
-                    </Form.Item>
+                        <Form.Item
+                            label="Опис"
+                            name="description"
+                            rules={[{max: 1000000, message: 'Максимум 1 мільйон символів'}]}
+                        >
+                            <TextArea />
+                        </Form.Item>
+                        
+                        <Form.Item
+                            label="Фото збірки"
+                            name="imgs"
+                            className="max-w-auto md:max-w-[450px]"
+                        >
+                            <ImgCrop rotationSlider quality={0.4}>
+                                <Upload
+                                    maxCount={10}
+                                    listType="picture-card"
+                                    beforeUpload={() => false}
+                                    onChange={handleBuildImgUpload}
+                                    onRemove={handleBuildImgRemove}
+                                    fileList={buildImgs}
+                                >
+                                    {buildImgs.length < 10 && '+ Upload'}
+                                </Upload>
+                            </ImgCrop>
+                        </Form.Item>
 
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit" loading={createBuildMutation.isPending}>
-                            Створити збірку
-                        </Button>
-                    </Form.Item>
-                </Form>
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit" loading={createBuildMutation.isPending}>
+                                Створити збірку
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </div>
             </div>
         }
-        <div>
-            <Typography.Title level={5}>Ціна за збірку: {buildPrice} ₴</Typography.Title>
-            <CreateBuildField componentType="CpuComponent" components={build.CpuComponent} componentName="Процесор" onBuildChange={handleBuildChange} />
-            <CreateBuildField componentType="MotherboardComponent" components={build.MotherboardComponent} componentName="Материнська плата" onBuildChange={handleBuildChange} />
-            <CreateBuildField componentType="MemoryComponent" components={build.MemoryComponent} componentName="Оперативна пам'ять" onBuildChange={handleBuildChange} />
-            <CreateBuildField componentType="SsdComponent" components={build.SsdComponent} componentName="SSD-диски" onBuildChange={handleBuildChange} />
-            <CreateBuildField componentType="HddComponent" components={build.HddComponent} componentName="Жорсткі диски" onBuildChange={handleBuildChange} />
-            <CreateBuildField componentType="VideoCardComponent" components={build.VideoCardComponent} componentName="Відеокарти" onBuildChange={handleBuildChange} />
-            <CreateBuildField componentType="PowerSupplyComponent" components={build.PowerSupplyComponent} componentName="Батарея" onBuildChange={handleBuildChange} />
-            <CreateBuildField componentType="CoolerComponent" components={build.CoolerComponent} componentName="Кулер" onBuildChange={handleBuildChange} />
-            <CreateBuildField componentType="CaseComponent" components={build.CaseComponent} componentName="Кейс" onBuildChange={handleBuildChange} />
+        <div className="w-full md:w-2/3 p-3">
+            <div>
+                <Typography.Title level={4}>Ціна: <span className="p-1 rounded-xl bg-blue-300 text-black">{buildPrice}</span> ₴</Typography.Title>
+                <CreateBuildField componentType="CpuComponent" components={build.CpuComponent} componentName="Процесор" onBuildChange={handleBuildChange} />
+                <CreateBuildField componentType="MotherboardComponent" components={build.MotherboardComponent} componentName="Материнська плата" onBuildChange={handleBuildChange} />
+                <CreateBuildField componentType="MemoryComponent" components={build.MemoryComponent} componentName="Оперативна пам'ять" onBuildChange={handleBuildChange} />
+                <CreateBuildField componentType="SsdComponent" components={build.SsdComponent} componentName="SSD-диски" onBuildChange={handleBuildChange} />
+                <CreateBuildField componentType="HddComponent" components={build.HddComponent} componentName="Жорсткі диски" onBuildChange={handleBuildChange} />
+                <CreateBuildField componentType="VideoCardComponent" components={build.VideoCardComponent} componentName="Відеокарти" onBuildChange={handleBuildChange} />
+                <CreateBuildField componentType="PowerSupplyComponent" components={build.PowerSupplyComponent} componentName="Джерела живлення" onBuildChange={handleBuildChange} />
+                <CreateBuildField componentType="CoolerComponent" components={build.CoolerComponent} componentName="Кулер" onBuildChange={handleBuildChange} />
+                <CreateBuildField componentType="CaseComponent" components={build.CaseComponent} componentName="Кейси" onBuildChange={handleBuildChange} />
+            </div>
         </div>
-    </div>;
+    </div>
 }

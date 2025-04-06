@@ -3,10 +3,11 @@ import { buildService } from "@/services/build.service";
 import { useStore } from "@/store/store";
 import { DeleteOutlined, SaveOutlined } from "@ant-design/icons";
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { Avatar, Button, Carousel, Form, Image, List, message, Rate, Spin, Tooltip, Typography } from "antd";
+import { Avatar, Button, Carousel, Form, Image, List, message, Popconfirm, Rate, Spin, Tooltip, Typography } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { useEffect, useState } from "react";
 import BuildComponentsTable from "./BuildComponentsTable";
+import { Link } from "@tanstack/react-router";
 
 type CreateCommentValues = {
     text: string;
@@ -15,11 +16,10 @@ type CreateCommentValues = {
 
 export default function BuildDetails() {
     const params = buildDetailsPageRoute.useParams();
-    const [newComments, setNewComments] = useState<any[]>([]);
-    const [allComments, setAllComments] = useState<any[]>([]);
-    
     const user = useStore(state => state.user);
     const [createCommentForm] = Form.useForm();
+
+    const [allComments, setAllComments] = useState<any[]>([]);
     
     const findBuildQuery = useQuery({
         queryFn: () => {
@@ -46,7 +46,7 @@ export default function BuildDetails() {
             user?.id
         ],
         onSuccess(newComment) {
-            setNewComments(prev => [...prev, {...newComment, user}]);
+            setAllComments(prev => [{...newComment, user}, ...prev]);
         },
     });
 
@@ -74,7 +74,7 @@ export default function BuildDetails() {
         },
         mutationKey: ['save-build'],
         onSuccess() {
-            message.success('Build saved successfully!');
+            message.success('Збірка збережена!');
         },
     });
 
@@ -83,39 +83,38 @@ export default function BuildDetails() {
     }
 
     useEffect(() => {
-        if (newComments && findBuildQuery.data?.buildComments) {
-            setAllComments([...newComments, ...findBuildQuery.data.buildComments]);
+        if (findBuildQuery.data?.buildComments) {
+            setAllComments([...findBuildQuery.data.buildComments]);
         } 
-    }, [newComments, findBuildQuery.data]);
+    }, [findBuildQuery.data]);
 
-    return <div>
-        {findBuildQuery.isPending ? <Spin /> : <div>
-            <div>
-                <Typography.Title>{findBuildQuery.data.name}</Typography.Title>
-            </div>
-            <div>
-                Рейтинг: <Rate defaultValue={findBuildQuery.data.rating} disabled />
-            </div>
-            <div>
-                <Typography.Text>Ціна: {findBuildQuery.data.price} ₴</Typography.Text>
-            </div>
-            {user && <div>
-                Зберегти збірку: <SaveOutlined onClick={() => saveBuild(findBuildQuery.data.id)} />
-            </div>}
-            <div>
-                <Typography.Text>
+    return findBuildQuery.isPending ? <Spin className="w-full flex justify-center items-center" /> : 
+        <div className="flex flex-col md:flex-row w-full">
+            <div className="w-full md:w-1/3">
+               <div className="flex flex-col gap-4">
                     <div>
-                        Користувач: <Avatar src={findBuildQuery.data.user.avatarUrl}/> {findBuildQuery.data.user.nickname}
+                        <Typography.Title>{findBuildQuery.data.name}</Typography.Title>
                     </div>
-                </Typography.Text>
-            </div>
-            {findBuildQuery.data.description && <div>
-                <Typography.Text>
-                    {findBuildQuery.data.description}
-                </Typography.Text>
-            </div>}
-            <div className="flex w-full">
-                <div className="w-1/3 max-h-[500px] pr-5">
+                    <div className="flex gap-1 items-center">
+                        <Avatar src={findBuildQuery.data.user.avatarUrl}/> 
+                        <div>
+                            {user ? <Link 
+                                to="/users/$nickname" 
+                                params={{ nickname: findBuildQuery.data.user.nickname }}
+                            >{findBuildQuery.data.user.nickname}</Link> : findBuildQuery.data.user.nickname}
+                        </div>
+                    </div>
+                    <div>
+                        <span className="mr-2 p-1 text-2xl font-bold rounded-xl">
+                            <span className="p-1 bg-blue-300 rounded-xl">{findBuildQuery.data.price}</span> ₴</span>
+                        <Rate defaultValue={findBuildQuery.data.rating} disabled />
+                    </div>
+                    {user && <div>
+                        <Button onClick={() => saveBuild(findBuildQuery.data.id)} icon={<SaveOutlined />}>Зберегти збірку</Button>
+                    </div>}
+               </div>
+                
+                <div className="max-h-[500px] pr-5">
                     <Carousel arrows>
                         {findBuildQuery.data.imgsUrls.map((imgUrl: string) => (
                             <div>
@@ -124,7 +123,14 @@ export default function BuildDetails() {
                         ))}
                     </Carousel>
                 </div>
-                <div className="w-1/3">
+                {findBuildQuery.data.description && <div>
+                    <Typography.Text>
+                        {findBuildQuery.data.description}
+                    </Typography.Text>
+                </div>}
+            </div>
+            <div className="w-full md:w-2/3">
+                <div className="flex flex-col">
                     <BuildComponentsTable components={[{ imgUrl: findBuildQuery.data.cpu.imgUrls[0], ...findBuildQuery.data.cpu.marketplacesComponents[0] }]} componentName="Процесор" componentType="CpuComponent" />
                     <BuildComponentsTable components={[{ imgUrl: findBuildQuery.data.motherBoard.imgUrls[0], ...findBuildQuery.data.motherBoard.marketplacesComponents[0] }]} componentName="Материнська плата" componentType="MotherboardComponent" />
                     <BuildComponentsTable components={findBuildQuery.data.ssds.map((c: any) => ({ imgUrl: c.imgUrls[0], ...c.marketplacesComponents[0] }))} componentName="SSD-диски" componentType="SsdComponent" />
@@ -132,10 +138,10 @@ export default function BuildDetails() {
                     <BuildComponentsTable components={findBuildQuery.data.videoCards.map((c: any) => ({ imgUrl: c.imgUrls[0], ...c.marketplacesComponents[0] }))} componentName="Відеокарти" componentType="VideoCardComponents" />
                     <BuildComponentsTable components={findBuildQuery.data.memories.map((c: any) => ({ imgUrl: c.imgUrls[0], ...c.marketplacesComponents[0] }))} componentName="Оперативна пам'ять" componentType="MemoryComponent" />
                     <BuildComponentsTable components={findBuildQuery.data.coolers.map((c: any) => ({ imgUrl: c.imgUrls[0], ...c.marketplacesComponents[0] }))} componentName="Кулери" componentType="CoolerComponent" />
+                    <BuildComponentsTable components={findBuildQuery.data.powerSupplies.map((c: any) => ({ imgUrl: c.imgUrls[0], ...c.marketplacesComponents[0] }))} componentName="Джерела живлення" componentType="PowerSupplyComponent" />
                     <BuildComponentsTable components={findBuildQuery.data.cases.map((c: any) => ({ imgUrl: c.imgUrls[0], ...c.marketplacesComponents[0] }))} componentName="Кейси" componentType="CaseComponent" />
-                    <BuildComponentsTable components={findBuildQuery.data.powerSupplies.map((c: any) => ({ imgUrl: c.imgUrls[0], ...c.marketplacesComponents[0] }))} componentName="Батареї" componentType="PowerSupplyComponent" />
                 </div>
-                <div className="w-1/3">
+                <div>
                     <Typography.Title level={3}>Коментарі</Typography.Title>
                     {user && <div>
                         <Form
@@ -146,8 +152,9 @@ export default function BuildDetails() {
                             <Form.Item
                                 name="text"
                                 rules={[{max: 10000, message: 'Максимальна довжина коментаря 10000 символів'}, {required: true, message: 'Текст коментаря обов\'язковий'}]}
+                                className="w-auto md:w-[550px]"
                             >
-                                <TextArea maxLength={10000} cols={5} rows={1} placeholder="Додати коментар" />
+                                <TextArea maxLength={10000} cols={5} rows={2} placeholder="Додати коментар" />
                             </Form.Item>
 
                             <Form.Item
@@ -169,11 +176,24 @@ export default function BuildDetails() {
                             dataSource={allComments}
                             renderItem={
                                 comment => (
-                                    <List.Item className="max-w-[400px]" actions={comment.user.id === user?.id ? [
-                                        <Tooltip title="Видалити коментар"><DeleteOutlined onClick={() => deleteComment(comment.id)} /></Tooltip>
+                                    <List.Item className="w-full md:w-[800px]" actions={comment.user.id === user?.id ? [
+                                        <Popconfirm title="Ви впевнені, що хочете видалити коментар?" onConfirm={() => deleteComment(comment.id)}>
+                                            <Tooltip title="Видалити коментар">
+                                                <DeleteOutlined />
+                                            </Tooltip>
+                                        </Popconfirm>
                                     ] : []}>
                                         <List.Item.Meta 
-                                            title={comment.user.nickname}
+                                            title={user ? 
+                                                <Link 
+                                                    to="/users/$nickname"
+                                                    params={{ nickname: comment.user.nickname }}
+                                                    className="text-blue-500"
+                                                >
+                                                    {comment.user.nickname}
+                                                </Link> :
+                                                comment.user.nickname
+                                            }
                                             avatar={<Avatar src={comment.user.avatarUrl} />}
                                             description={comment.text}
                                         />
@@ -186,6 +206,5 @@ export default function BuildDetails() {
                     }
                 </div>
             </div>
-        </div>}
-    </div>
+        </div>
 }

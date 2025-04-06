@@ -4,4 +4,5 @@ export type UserPayload = {
   email: string;
   isAdmin: boolean;
   avatarUrl: string;
+  createdAt: string;
 };

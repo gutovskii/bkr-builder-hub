@@ -2,8 +2,9 @@ import { capitalizeFirstLetter, formatCamelCaseToSentence } from "@/common/helpe
 import { componentsService, type ComponentFilterResponse } from "@/services/components.service";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams, useSearch } from "@tanstack/react-router";
-import { Checkbox, Collapse, Slider } from "antd";
+import { Checkbox, Collapse, InputNumber, Slider, Typography } from "antd";
 import Sider from "antd/es/layout/Sider";
+import debounce from "lodash.debounce";
 import { useEffect, useState } from "react";
 
 export type ComponentSearchFilters = Record<string, Omit<ComponentFilterResponse['filters'][0], 'title'>>;
@@ -15,6 +16,7 @@ export default function ComponentsFiltersSider() {
     const navigate = useNavigate();
     
     const [filters, setFilters] = useState<ComponentSearchFilters | undefined>(undefined);
+    const [collapsed, setCollapsed] = useState(false);
 
     const filtersQuery = useQuery({
         queryFn: () => {
@@ -79,7 +81,7 @@ export default function ComponentsFiltersSider() {
     }
 
     let sliderTimeout: number;
-    const onSliderChange = async (fitlerTitle: string, minValue: number, maxValue: number) => {
+    const onSliderChange = async (filterTitle: string, minValue: number, maxValue: number) => {
         if (!filters) return;
 
         let updatedFilters = { ...searchFilters };
@@ -88,7 +90,7 @@ export default function ComponentsFiltersSider() {
             updatedFilters = {};
         }
 
-        updatedFilters[fitlerTitle] = {
+        updatedFilters[filterTitle] = {
             maxValue,
             minValue,
         };
@@ -111,35 +113,65 @@ export default function ComponentsFiltersSider() {
         });
     }
 
-    return <Sider width={200} theme={"light"}>
+    const handleSliderNumberInput = debounce((filterTitle: string, minValue: number, maxValue: number) => {
+        onSliderChange(filterTitle, minValue, maxValue);
+    }, 350);
+
+    return <Sider className='sticky' width={200} theme={"light"} collapsible collapsed={collapsed} onCollapse={value => setCollapsed(value)}>
+                <Typography.Title level={4} className="pl-3 pt-2">Filters</Typography.Title>
                 {filters && <Collapse 
                     items={Object.keys(filters).reverse().map((filterTitle: string) => ({
                         key: filterTitle === 'lowestPrice' ? 'price' : filterTitle,
-                        label: formatCamelCaseToSentence(filterTitle === 'lowestPrice' ? 'price' : filterTitle),
+                        label: !collapsed ? formatCamelCaseToSentence(filterTitle === 'lowestPrice' ? 'price' : filterTitle) : '',
                         children: filters[filterTitle].characteristics 
                             ? filters[filterTitle].characteristics.map(characteristicsValue => {
                                 return <div key={characteristicsValue}>
                                 <Checkbox
-                                    onChange={(e) => {return onCheckboxChange(filterTitle, characteristicsValue, e.target.checked)}}
+                                    onChange={(e) => onCheckboxChange(filterTitle, characteristicsValue, e.target.checked)}
                                     checked={searchFilters?.[filterTitle]?.characteristics.includes(characteristicsValue)}
                                 >{characteristicsValue}</Checkbox>
                             </div>
                             })
-                            : <Slider
-                                range 
-                                onChange={(values) => {
-                                    clearTimeout(sliderTimeout);
-                                    sliderTimeout = setTimeout(() => {
-                                        onSliderChange(filterTitle, values[0], values[1])
-                                    }, 300);
-                                }}
-                                min={filters[filterTitle].minValue!}
-                                max={filters[filterTitle].maxValue!}
-                                value={[
-                                    searchFilters?.[filterTitle]?.minValue ?? filters[filterTitle].minValue!, 
-                                    searchFilters?.[filterTitle]?.maxValue ?? filters[filterTitle].maxValue!,
-                                ]}
-                            />
+                            : <div>
+                                <div className="flex w-full justify-between">
+                                    <div className="w-1/2 p-1">
+                                        <InputNumber 
+                                            className="!w-[70px]"
+                                            onChange={(number) => handleSliderNumberInput(filterTitle, number, filters[filterTitle].maxValue!)}
+                                            min={filters[filterTitle].minValue!}
+                                            max={filters[filterTitle].maxValue!}
+                                            defaultValue={searchFilters?.[filterTitle]?.minValue ?? filters[filterTitle].minValue!}
+                                        />
+                                    </div>
+                                    <div className="w-1/2 p-1">
+                                        <InputNumber 
+                                            className="!w-[70px]"
+                                            onChange={(number) => handleSliderNumberInput(filterTitle, filters[filterTitle].minValue!, number)}
+                                            min={filters[filterTitle].minValue!}
+                                            max={filters[filterTitle].maxValue!}
+                                            value={searchFilters?.[filterTitle]?.maxValue ?? filters[filterTitle].maxValue!}
+                                            defaultValue={searchFilters?.[filterTitle]?.maxValue ?? filters[filterTitle].maxValue!}
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <Slider
+                                        range 
+                                        onChange={(values) => {
+                                            clearTimeout(sliderTimeout);
+                                            sliderTimeout = setTimeout(() => {
+                                                onSliderChange(filterTitle, values[0], values[1])
+                                            }, 300);
+                                        }}
+                                        min={filters[filterTitle].minValue!}
+                                        max={filters[filterTitle].maxValue!}
+                                        value={[
+                                            searchFilters?.[filterTitle]?.minValue ?? filters[filterTitle].minValue!, 
+                                            searchFilters?.[filterTitle]?.maxValue ?? filters[filterTitle].maxValue!,
+                                        ]}
+                                    />
+                                </div>
+                            </div>
                     }))}
                 />}
             </Sider>;

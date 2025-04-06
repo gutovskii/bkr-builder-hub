@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router"
 import { useEffect, useState } from "react";
 import Sider from "antd/es/layout/Sider";
-import { Checkbox, Collapse, Slider } from "antd";
+import { Checkbox, Collapse, Slider, Typography } from "antd";
 import { formatCamelCaseToSentence } from "@/common/helpers";
 
 export type BuildsFiltersSiderProps = {
@@ -14,6 +14,7 @@ export default function BuildsFiltersSider({ searchFilters }: BuildsFiltersSider
     const navigate = useNavigate();
 
     const [filters, setFilters] = useState<any>(undefined);
+    const [collapsed, setCollapsed] = useState(false);
 
     const filtersQuery = useQuery({
         queryFn: () => {
@@ -107,11 +108,12 @@ export default function BuildsFiltersSider({ searchFilters }: BuildsFiltersSider
         });
     }
 
-    return <Sider width={200} theme={'light'}>
+    return <Sider width={200} theme={'light'} collapsible collapsed={collapsed} onCollapse={value => setCollapsed(value)}>
+        <Typography.Title level={4} className="pl-3 pt-2">Filters</Typography.Title>
         {filters && <Collapse 
             items={Object.keys(filters).reverse().map((filterTitle: string) => ({
                 key: filterTitle === 'lowestPrice' ? 'price' : filterTitle,
-                label: formatCamelCaseToSentence(filterTitle === 'lowestPrice' ? 'price' : filterTitle),
+                label: !collapsed ? formatCamelCaseToSentence(filterTitle === 'lowestPrice' ? 'price' : filterTitle) : '',
                 children: filters[filterTitle].characteristics 
                     ? filters[filterTitle].characteristics.map((characteristicsValue: any) => {
                         return <div key={characteristicsValue}>

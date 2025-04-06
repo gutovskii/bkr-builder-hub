@@ -5,3 +5,9 @@ export type UserPayload = {
     isAdmin: boolean;
     avatarUrl: string;
 }
+
+export type NestError = {
+    message: string;
+    error: string;
+    statusCode: number;
+}

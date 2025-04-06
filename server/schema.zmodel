@@ -54,6 +54,8 @@ model UserEntity {
     createdBuilds BuildEntity[] @relation("CreatedBuilds")
     buildComments BuildComment[]
 
+    createdAt DateTime @default(now())
+
     @@allow('all', true)
 }
 

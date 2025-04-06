@@ -1,6 +1,6 @@
 import { createRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { message, Form, Input, Button, Typography, Upload, type GetProp, type UploadProps } from 'antd';
+import { message, Form, Input, Button, Typography, Upload, type GetProp, type UploadProps, Avatar } from 'antd';
 import { rootRoute } from "@/main";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { authService } from "@/services/auth.service";
@@ -72,7 +72,7 @@ export default function Register() {
     }
 
     return (
-        <div className="flex justify-center w-full items-center h-[100vh] gap-10">
+        <div className="flex flex-col md:flex-row justify-center w-full items-center h-[100vh] gap-10">
             <Typography.Title color="white">BUILDER HUB</Typography.Title>
             <Form
                 form={form}
@@ -81,31 +81,31 @@ export default function Register() {
                 className="min-w-[90%] md:min-w-[50%] lg:min-w-[25%]"
             >
                 <Form.Item
-                    label="Nickname"
+                    label="Нікнейм"
                     name="nickname"
-                    rules={[{ required: true, message: 'Please enter your nickname!'}]}
+                    rules={[{ required: true, message: 'Уведіть свій нікнейм!'}]}
                 >
-                    <Input placeholder="Enter nickname" />
+                    <Input placeholder="Уведіть нікнейм" />
                 </Form.Item>
 
                 <Form.Item
-                    label="Email"
+                    label="Пошта"
                     name="email"
-                    rules={[{ required: true, message: 'Please enter your email!'}, { type: 'email' }]}
+                    rules={[{ required: true, message: 'Уведіть свою пошту!'}, { type: 'email' }]}
                 >
-                    <Input placeholder="Enter email" />
+                    <Input placeholder="Уведіть пошту" />
                 </Form.Item>
 
                 <Form.Item
-                    label="Password"
+                    label="Пароль"
                     name="password"
-                    rules={[{ required: true, message: 'Please enter your password!'}]}
+                    rules={[{ required: true, message: 'Уведіть свій пароль!'}]}
                 >
-                    <Input.Password placeholder="Enter password" />
+                    <Input.Password placeholder="Уведіть пароль" />
                 </Form.Item>
 
                 <Form.Item
-                    label="Avatar"
+                    label="Аватарка"
                     name="avatarImg"
                 >
                     <Upload
@@ -116,17 +116,17 @@ export default function Register() {
                         beforeUpload={() => false}
                         onChange={handleChange}
                     >
-                        {avatarBase64Url ? <img src={avatarBase64Url} alt="avatar" style={{ width: '100%' }} /> : 
+                        {avatarBase64Url ? <Avatar src={avatarBase64Url} alt="avatar" style={{ width: '100%', height: '100%' }} /> : 
                         <button style={{ border: 0, background: 'none' }} type="button">
                             {avatarLoading ? <LoadingOutlined /> : <PlusOutlined />}
-                            <div style={{ marginTop: 8 }}>Upload</div>
+                            <div style={{ marginTop: 8 }}>Завантажити</div>
                         </button>}
                     </Upload>
                     </Form.Item>
 
                 <Form.Item>
                     <Button type="primary" htmlType="submit" loading={mutation.isPending}>
-                        Register
+                        Зареєструватись
                     </Button>
                 </Form.Item>
             </Form>

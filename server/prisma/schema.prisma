@@ -35,6 +35,7 @@ model UserEntity {
   savedBuilds     BuildEntity[]   @relation("SavedBuilds")
   createdBuilds   BuildEntity[]   @relation("CreatedBuilds")
   buildComments   BuildComment[]
+  createdAt       DateTime        @default(now())
 }
 
 model BuildComment {

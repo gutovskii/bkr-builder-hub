@@ -1,7 +1,4 @@
 import { router } from "@/main";
-import { CloseOutlined } from "@ant-design/icons";
-import { Link } from "@tanstack/react-router";
-import { Button, Image, Space, Table, Tooltip, Typography } from "antd";
 import { useState } from "react";
 import BuildComponentsTable from "./BuildComponentsTable";
 
@@ -25,17 +22,13 @@ export default function CreateBuildField({ componentType, componentName, compone
         onBuildChange();
     };
     
-    return <div>
-        <div>
-            <div className="flex gap-2 items-center">
-                <Button onClick={() => router.navigate({ to: '/components/$componentType', params: { componentType } })}>Додати до збірки</Button>
-            </div>
-            <BuildComponentsTable 
-                components={buildComponents} 
-                componentType={componentType} 
-                componentName={componentName} 
-                handleRemoveFromBuild={removeFromBuild}
-            />
-        </div>
+    return <div className="mb-2">
+        <BuildComponentsTable 
+            components={buildComponents} 
+            componentType={componentType} 
+            componentName={componentName} 
+            handleRemoveFromBuild={removeFromBuild}
+            handleNavigate={() => router.navigate({ to: '/components/$componentType', params: { componentType } })}
+        />
     </div>;
 }

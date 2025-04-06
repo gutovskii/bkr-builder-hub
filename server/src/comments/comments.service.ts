@@ -50,7 +50,7 @@ export class CommentsService {
         buildId,
       },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: 'asc',
       },
       skip: pagination.skip,
       take: pagination.take,

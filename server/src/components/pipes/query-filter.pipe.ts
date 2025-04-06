@@ -18,7 +18,7 @@ export class QueryFilterPipe implements PipeTransform {
 
     const parsedFilters: FilterQuery = { where: {} };
 
-    for (const key of Object.keys(filters)) {
+    for (let key of Object.keys(filters)) {
       if (key === 'sortBy' || key === 'sortOrder') continue;
 
       if (Array.isArray(filters[key]?.characteristics)) {
@@ -36,7 +36,7 @@ export class QueryFilterPipe implements PipeTransform {
             ? { lte: this.parseNumber(filters[key].maxValue, `${key}.max`) }
             : {}),
         };
-        // if (key === 'price') key = 'lowestPrice'; // todo remove after next scrapping session (price => lowestPrice)
+        if (key === 'price') key = 'lowestPrice'; // todo remove after next scrapping session (price => lowestPrice)
         parsedFilters.where[key] = filterSettings;
       } else {
         parsedFilters.where[key] = filters[key];
