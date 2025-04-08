@@ -6,6 +6,7 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Put,
   Query,
   UploadedFiles,
   UseGuards,
@@ -38,8 +39,9 @@ export class BuildController {
     @Query('name') name: string,
     @Query(PaginationPipe) pagination: PaginationConfig,
     @Query(QueryFilterPipe) filters: FilterQuery,
+    @User() user: UserPayload | null,
   ) {
-    return this.buildService.findAll(name, pagination, filters);
+    return this.buildService.findAll(user?.id, name, pagination, filters);
   }
 
   @Get('created')
@@ -70,8 +72,8 @@ export class BuildController {
   }
 
   @Get(':id')
-  getBuild(@Param('id', ParseUUIDPipe) id: string) {
-    return this.buildService.findOne(id);
+  getBuild(@Param('id', ParseUUIDPipe) id: string, @User() user: UserPayload) {
+    return this.buildService.findOne(id, user.id);
   }
 
   @Post()
@@ -111,5 +113,23 @@ export class BuildController {
     @User() user: UserPayload,
   ) {
     return this.buildService.unsaveBuild(user.id, buildId);
+  }
+
+  @Put('like')
+  @UseGuards(AuthGuard)
+  likeBuild(
+    @Body() { buildId }: { buildId: string },
+    @User() user: UserPayload,
+  ) {
+    return this.buildService.likeBuild(user.id, buildId);
+  }
+
+  @Put('unlike')
+  @UseGuards(AuthGuard)
+  unlikeBuild(
+    @Body() { buildId }: { buildId: string },
+    @User() user: UserPayload,
+  ) {
+    return this.buildService.unlikeBuild(user.id, buildId);
   }
 }

@@ -1,7 +1,7 @@
 import { NO_IMAGE_SRC } from "@/common/consts";
 import { PlusOutlined } from "@ant-design/icons";
 import { Link, useParams } from "@tanstack/react-router";
-import { Card, Image, Tooltip, Typography } from "antd";
+import { Card, Image, message, Tooltip, Typography } from "antd";
 
 export default function ComponentItem({data}: any) {
     const params = useParams({ from: '/components/$componentType' });
@@ -32,18 +32,27 @@ export default function ComponentItem({data}: any) {
         }
 
         localStorage.setItem('build', JSON.stringify(parsed));
+
+        message.success('Додано в збірку!');
+    }
+
+
+    const getActions = () => {
+        const actions: React.ReactNode[] = [];
+
+        actions.push(<Tooltip title="Додати в збірку">
+            <PlusOutlined title="Додати в збірку" key="addToBuild" onClick={() => addToBuild(data)} />
+        </Tooltip>);
+
+        return actions;
     }
 
     return <div className="w-1/2 md:w-1/3 lg:w-1/5 flex flex-col pb-2" title={data.componentUnifiedName}>
         <Card
             hoverable
             className="w-[95%] min-h-[350px]"
-            cover={data.imgUrls[0] ? <Image height={150} src={data.imgUrls[0]} /> : <Image height={150} preview={false} src={NO_IMAGE_SRC} />}
-            actions={[
-                <Tooltip title="Додати в збірку">
-                    <PlusOutlined title="Додати в збірку" key="addToBuild" onClick={() => addToBuild(data)} />
-                </Tooltip>,
-            ]}
+            cover={data.imgUrls[0] ? <div className="!flex justify-center"><Image height={150} src={data.imgUrls[0]} /></div> : <Image height={150} preview={false} src={NO_IMAGE_SRC} />}
+            actions={getActions()}
         >
             <Link to="/components/$componentType/$id" params={{componentType: params.componentType, id: data.id}}>
                 <Card.Meta

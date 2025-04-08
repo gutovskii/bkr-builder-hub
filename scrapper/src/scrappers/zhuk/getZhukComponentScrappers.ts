@@ -3,13 +3,13 @@ import { ZhukCaseComponentScrapper, ZhukCoolerComponentScrapper, ZhukCpuComponen
 import { AbstractZhukComponentScrapper } from "./AbstractZhukComponentScrapper";
 
 export const getZhukComponentScrappers = (browser: Browser): AbstractZhukComponentScrapper[] => [
-    // new ZhukCpuComponentScrapper(browser),
-    // new ZhukCaseComponentScrapper(browser),
-    // new ZhukCoolerComponentScrapper(browser),
-    // new ZhukHddComponentScrapper(browser),
-    // new ZhukMemoryComponentScrapper(browser),
-    // new ZhukMotherboardComponentScrapper(browser),
-    // new ZhukPowerSupplyComponentScrapper(browser),
+    new ZhukCpuComponentScrapper(browser),
+    new ZhukCaseComponentScrapper(browser),
+    new ZhukCoolerComponentScrapper(browser),
+    new ZhukHddComponentScrapper(browser),
+    new ZhukMemoryComponentScrapper(browser),
+    new ZhukMotherboardComponentScrapper(browser),
+    new ZhukPowerSupplyComponentScrapper(browser),
     new ZhukVideoCardComponentScrapper(browser),
     new ZhukSsdComponentScrapper(browser),
 ];

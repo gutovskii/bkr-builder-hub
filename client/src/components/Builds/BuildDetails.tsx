@@ -1,13 +1,14 @@
 import { buildDetailsPageRoute } from "@/pages/BuildDetailsPage";
 import { buildService } from "@/services/build.service";
 import { useStore } from "@/store/store";
-import { DeleteOutlined, SaveOutlined } from "@ant-design/icons";
+import { DeleteOutlined, SaveOutlined, UpOutlined } from "@ant-design/icons";
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { Avatar, Button, Carousel, Form, Image, List, message, Popconfirm, Rate, Spin, Tooltip, Typography } from "antd";
+import { Avatar, Button, Carousel, Form, Image, List, message, Popconfirm, Spin, Tooltip, Typography } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { useEffect, useState } from "react";
 import BuildComponentsTable from "./BuildComponentsTable";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
+import MDEditor from "@uiw/react-md-editor";
 
 type CreateCommentValues = {
     text: string;
@@ -18,12 +19,20 @@ export default function BuildDetails() {
     const params = buildDetailsPageRoute.useParams();
     const user = useStore(state => state.user);
     const [createCommentForm] = Form.useForm();
+    const navigate = useNavigate();
 
     const [allComments, setAllComments] = useState<any[]>([]);
+    const [likes, setLikes] = useState(0);
+    const [isLiked, setIsLiked] = useState(false);
     
     const findBuildQuery = useQuery({
-        queryFn: () => {
-            return buildService.findOne(params.buildId);
+        queryFn: async () => {
+            const build = await buildService.findOne(params.buildId);
+
+            setLikes(build.likes);
+            setIsLiked(build.isLiked);
+
+            return build;
         },
         queryKey: ['build-details', params.buildId],
         refetchOnWindowFocus: false,
@@ -33,7 +42,7 @@ export default function BuildDetails() {
         mutationFn: ({ text, rating }: any) => {
             return buildService.createComment({ 
                 text, 
-                rating, 
+                rating: rating ?? 0, 
                 buildId: params.buildId, 
                 userId: user?.id
             });
@@ -81,10 +90,25 @@ export default function BuildDetails() {
     const saveBuild = (buildId: string) => {
         saveBuildMutation.mutate(buildId);
     }
+    
+    const likeBuild = async (buildId: string) => {
+        if (!user) return navigate({ to: '/login' });
+        setLikes(likes + 1);
+        setIsLiked(true);
+        await buildService.likeBuild(buildId);
+    }
+
+    const unlikeBuild = async (buildId: string) => {
+        if (!user) return navigate({ to: '/login' });
+        setLikes(likes - 1);
+        setIsLiked(false);
+        await buildService.unlikeBuild(buildId);
+    }
 
     useEffect(() => {
-        if (findBuildQuery.data?.buildComments) {
-            setAllComments([...findBuildQuery.data.buildComments]);
+        if (findBuildQuery.data?.buildComments.length) {
+            console.log(findBuildQuery.data?.buildComments);
+            setAllComments(findBuildQuery.data.buildComments);
         } 
     }, [findBuildQuery.data]);
 
@@ -106,27 +130,41 @@ export default function BuildDetails() {
                     </div>
                     <div>
                         <span className="mr-2 p-1 text-2xl font-bold rounded-xl">
-                            <span className="p-1 bg-blue-300 rounded-xl">{findBuildQuery.data.price}</span> ₴</span>
-                        <Rate defaultValue={findBuildQuery.data.rating} disabled />
+                            <span className="p-1 bg-blue-300 rounded-xl">{findBuildQuery.data.price}</span> ₴
+                        </span>
+                        <Tooltip title={isLiked ? "Прибрати вподобайку" : "Вподобати"}>
+                            <Button 
+                                className="flex mt-2 items-center gap-1 cursor-pointer" 
+                                onClick={() => isLiked ? unlikeBuild(findBuildQuery.data.id) : likeBuild(findBuildQuery.data.id)}
+                            >
+                                <UpOutlined 
+                                    key="likeBuild" 
+                                    className={isLiked ? "!text-blue-600" : "!text-gray-700"}
+                                    title={isLiked ? "Прибрати вподобайку" : "Вподобати"}
+                                />
+                                <div className={isLiked ? "!text-blue-600" : "!text-gray-700"}>{likes}</div>
+                            </Button>
+                        </Tooltip>
                     </div>
                     {user && <div>
                         <Button onClick={() => saveBuild(findBuildQuery.data.id)} icon={<SaveOutlined />}>Зберегти збірку</Button>
                     </div>}
                </div>
                 
-                <div className="max-h-[500px] pr-5">
+                <div className="max-h-[500px] pr-5 mt-3">
                     <Carousel arrows>
                         {findBuildQuery.data.imgsUrls.map((imgUrl: string) => (
-                            <div>
+                            <div className="!flex justify-center">
                                 <Image height={350} src={imgUrl} preview={false} />
                             </div>
                         ))}
                     </Carousel>
                 </div>
                 {findBuildQuery.data.description && <div>
-                    <Typography.Text>
-                        {findBuildQuery.data.description}
-                    </Typography.Text>
+                    <Typography.Title level={4}>Опис</Typography.Title>
+                    <div className="p-3">
+                        <MDEditor.Markdown className="!bg-[#f5f5f5]" source={findBuildQuery.data.description} />
+                    </div>
                 </div>}
             </div>
             <div className="w-full md:w-2/3">
@@ -157,12 +195,6 @@ export default function BuildDetails() {
                                 <TextArea maxLength={10000} cols={5} rows={2} placeholder="Додати коментар" />
                             </Form.Item>
 
-                            <Form.Item
-                                name="rating"
-                            >
-                                <Rate allowHalf />
-                            </Form.Item>
-
                             <Form.Item>
                                 <Button
                                     htmlType="submit"
@@ -176,7 +208,7 @@ export default function BuildDetails() {
                             dataSource={allComments}
                             renderItem={
                                 comment => (
-                                    <List.Item className="w-full md:w-[800px]" actions={comment.user.id === user?.id ? [
+                                    <List.Item className="w-full md:w-[500px]" actions={comment.user.id === user?.id ? [
                                         <Popconfirm title="Ви впевнені, що хочете видалити коментар?" onConfirm={() => deleteComment(comment.id)}>
                                             <Tooltip title="Видалити коментар">
                                                 <DeleteOutlined />
@@ -197,7 +229,6 @@ export default function BuildDetails() {
                                             avatar={<Avatar src={comment.user.avatarUrl} />}
                                             description={comment.text}
                                         />
-                                        {comment.rating && <Rate defaultValue={comment.rating} disabled />}
                                     </List.Item>
                                 )
                             }

@@ -10,7 +10,7 @@ export const profileRoute = createRoute({
     path: '/profile',
     getParentRoute: () => rootRoute,
     component: ProfilePage,
-    beforeLoad: () => authRouteGuard()
+    beforeLoad: () => authRouteGuard(),
 });
 
 export default function ProfilePage() {

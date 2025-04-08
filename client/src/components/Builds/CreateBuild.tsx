@@ -1,11 +1,12 @@
 import { useStore } from "@/store/store";
 import CreateBuildField from "./CreateBuildField";
 import { useState } from "react";
-import { Button, Form, Input, Typography, Upload, type UploadFile, type UploadProps } from "antd";
+import { Button, Form, Input, message, Typography, Upload, type UploadFile, type UploadProps } from "antd";
 import ImgCrop from 'antd-img-crop';
 import { buildService } from "@/services/build.service";
 import { useMutation } from "@tanstack/react-query";
-import TextArea from "antd/es/input/TextArea";
+import MDEditor from '@uiw/react-md-editor';
+import { useNavigate } from "@tanstack/react-router";
 
 type CreateBuildValues = {
     name: string;
@@ -23,6 +24,7 @@ export default function CreateBuild() {
     );
 
     const [form] = Form.useForm<CreateBuildValues>();
+    const navigate = useNavigate();
 
     const user = useStore(state => state.user);
 
@@ -30,7 +32,14 @@ export default function CreateBuild() {
         mutationFn: (formData: FormData) => {
             return buildService.createBuild(formData);
         },
-        mutationKey: ['createBuild', form.getFieldValue('name'), user?.id, localStorage.getItem('build')],
+        mutationKey: ['create-build', form.getFieldValue('name'), user?.id, localStorage.getItem('build')],
+        onSuccess(data) {
+            message.success('Збірки створена успішно!');
+            navigate({ to: '/builds/$buildId', params: {buildId: data.id} });
+        },
+        onError(error) {
+            message.error(error.message);
+        },
     });
 
     const handleBuildImgUpload: UploadProps['onChange'] = ({
@@ -106,13 +115,14 @@ export default function CreateBuild() {
                             name="description"
                             rules={[{max: 1000000, message: 'Максимум 1 мільйон символів'}]}
                         >
-                            <TextArea />
+                            <MDEditor />
                         </Form.Item>
                         
                         <Form.Item
                             label="Фото збірки"
                             name="imgs"
                             className="max-w-auto md:max-w-[450px]"
+                            rules={[{min: 1, message: 'Додайте хоча би одну фотографію'}]}
                         >
                             <ImgCrop rotationSlider quality={0.4}>
                                 <Upload

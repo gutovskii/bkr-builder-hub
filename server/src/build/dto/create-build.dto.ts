@@ -1,6 +1,7 @@
 export class CreateBuildDto {
   name: string;
   price: number;
+  description?: string;
 
   motherBoardId: string;
   cpuId: string;

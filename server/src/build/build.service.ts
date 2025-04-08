@@ -52,6 +52,7 @@ export class BuildService {
       data: {
         name: dto.name,
         price: dto.price,
+        description: dto.description,
         imgsUrls,
         user: {
           connect: { id: userId },
@@ -126,8 +127,13 @@ export class BuildService {
     return createdBuild;
   }
 
-  findOne(id: string) {
-    return this.prisma.buildEntity.findUnique({
+  async findOne(id: string, userId: string) {
+    const user = await this.prisma.userEntity.findFirst({
+      where: { id: userId },
+      include: { likedBuilds: { select: { id: true } } },
+    });
+
+    const build = await this.prisma.buildEntity.findUnique({
       where: { id },
       include: {
         user: true,
@@ -148,13 +154,24 @@ export class BuildService {
         coolers: { include: { marketplacesComponents: true } },
       },
     });
+
+    return {
+      ...build,
+      isLiked: user ? user.likedBuilds.some((b) => b.id === build.id) : false,
+    };
   }
 
   async findAll(
+    userId: string | null,
     name: string,
     pagination: PaginationConfig,
     filters: FilterQuery,
   ) {
+    const user = await this.prisma.userEntity.findFirst({
+      where: { id: userId },
+      include: { likedBuilds: { select: { id: true } } },
+    });
+
     const totalCount = await this.prisma.buildEntity.count({
       where: {
         ...filters.where,
@@ -186,9 +203,12 @@ export class BuildService {
         user: true,
       },
     });
-
+    console.log('user => ', user);
     return {
-      results,
+      results: results.map((r) => ({
+        ...r,
+        isLiked: user ? user.likedBuilds.some((o) => o.id === r.id) : false,
+      })),
       totalPages,
       totalCount,
       page: pagination.page,
@@ -201,6 +221,11 @@ export class BuildService {
     pagination: PaginationConfig,
     filters: FilterQuery,
   ) {
+    const user = await this.prisma.userEntity.findFirst({
+      where: { id: userId },
+      include: { likedBuilds: { select: { id: true } } },
+    });
+
     const totalCount = await this.prisma.buildEntity.count({
       where: {
         ...filters.where,
@@ -235,8 +260,12 @@ export class BuildService {
       },
     });
 
+    console.log('user =>', user);
     return {
-      results,
+      results: results.map((r) => ({
+        ...r,
+        isLiked: user ? user.likedBuilds.some((o) => o.id === r.id) : false,
+      })),
       totalPages,
       totalCount,
       page: pagination.page,
@@ -249,6 +278,11 @@ export class BuildService {
     pagination: PaginationConfig,
     filters: FilterQuery,
   ) {
+    const user = await this.prisma.userEntity.findFirst({
+      where: { id: userId },
+      include: { likedBuilds: { select: { id: true } } },
+    });
+
     const totalCount = await this.prisma.buildEntity.count({
       where: {
         id: userId,
@@ -286,7 +320,10 @@ export class BuildService {
     });
 
     return {
-      results,
+      results: results.map((r) => ({
+        ...r,
+        isLiked: user ? user.likedBuilds.some((o) => o.id === r.id) : false,
+      })),
       totalPages,
       totalCount,
       page: pagination.page,
@@ -312,6 +349,62 @@ export class BuildService {
           disconnect: { id: buildId },
         },
       },
+    });
+  }
+
+  async likeBuild(userId: string, buildId: string) {
+    const user = await this.prisma.userEntity.findFirst({
+      where: { id: userId },
+      include: { likedBuilds: { select: { id: true } } },
+    });
+
+    const build = await this.prisma.buildEntity.findFirst({
+      where: { id: buildId },
+    });
+
+    if (user.likedBuilds.some((b) => b.id === build.id)) {
+      return;
+    }
+
+    await this.prisma.buildEntity.update({
+      where: { id: buildId },
+      data: {
+        likes: { increment: 1 },
+      },
+    });
+
+    await this.prisma.userEntity.update({
+      where: { id: userId },
+      data: { ...user, likedBuilds: { connect: { id: build.id } } },
+    });
+  }
+
+  async unlikeBuild(userId: string, buildId: string) {
+    const user = await this.prisma.userEntity.findFirst({
+      where: { id: userId },
+      include: { likedBuilds: { select: { id: true } } },
+    });
+
+    const build = await this.prisma.buildEntity.findFirst({
+      where: { id: buildId },
+    });
+
+    if (build.likes === 0) return;
+
+    if (!user.likedBuilds.some((b) => b.id === build.id)) {
+      return;
+    }
+
+    await this.prisma.buildEntity.update({
+      where: { id: buildId },
+      data: {
+        likes: { decrement: 1 },
+      },
+    });
+
+    await this.prisma.userEntity.update({
+      where: { id: userId },
+      data: { ...user, likedBuilds: { disconnect: { id: build.id } } },
     });
   }
 }

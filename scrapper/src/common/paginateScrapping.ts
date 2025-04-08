@@ -168,7 +168,6 @@ export async function paginateScrapping<
                             componentType: createdUnifiedData.componentType,
                             filters: Object.entries(({ 
                                 ...JSON.parse(scrappedComponent.jsonCharacteristics), 
-                                lowestPrice: scrappedComponent.price
                             } as Record<string, string | number>))
                                 .map(([key, value]) => {
                                     if (typeof value === 'string') {
@@ -178,7 +177,7 @@ export async function paginateScrapping<
                                         };
                                     } else if (typeof value === 'number') {
                                         return {
-                                            title: key, // todo fooBar => Foo Bar | Foo bar
+                                            title: key,
                                             maxValue: value,
                                             minValue: value,
                                         };
@@ -190,7 +189,6 @@ export async function paginateScrapping<
                     const existingFilters = componentFilter.filters;
                     const newComponentCharacteristic = {
                         ...JSON.parse(scrappedComponent.jsonCharacteristics),
-                        lowestPrice: scrappedComponent.price,
                     } as Record<string, string | number>;
 
                     Object.entries(newComponentCharacteristic).map(([key, value]) => {

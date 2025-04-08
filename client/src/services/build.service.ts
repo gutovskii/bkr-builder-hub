@@ -54,5 +54,11 @@ export const buildService = {
     },
     async unsaveBuild(buildId: string) {
         return (await axiosInstance.post('/builds/unsave', { buildId })).data;
-    }
+    },
+    async likeBuild(buildId: string) {
+        return (await axiosInstance.put('/builds/like', { buildId })).data;
+    },
+    async unlikeBuild(buildId: string) {
+        return (await axiosInstance.put('/builds/unlike', { buildId })).data;
+    },
 };

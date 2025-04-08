@@ -54,7 +54,7 @@ export function getZhukPaginationConfig<TModel>(baseUrl: string, componentPageUr
                     name,
                     price,
                     imgUrls,
-                    rating: 0, // Todo: add rating somehow
+                    rating: 0,
                     warranty: characteristics.get("Гарантія"),
                 };
 
@@ -65,10 +65,10 @@ export function getZhukPaginationConfig<TModel>(baseUrl: string, componentPageUr
                     ...getAdditionalData(characteristics, name, price),
                     jsonCharacteristics: JSON.stringify(
                         Object.entries(getAdditionalData(characteristics, name, price) as Record<string, string | number>)
-                            .map(([key, value]) => (value === null ? null : [key, value])) // Map to either null or key-value pair
-                            .filter(Boolean) // Remove null entries
+                            .map(([key, value]) => (value === null ? null : [key, value]))
+                            .filter(Boolean)
                             .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {})
-                    ), // todo: wtf,
+                    ),
                 };
             }, getAdditionalDataStr);
         }

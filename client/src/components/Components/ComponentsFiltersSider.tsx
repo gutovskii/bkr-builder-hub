@@ -119,7 +119,8 @@ export default function ComponentsFiltersSider() {
 
     return <Sider className='sticky' width={200} theme={"light"} collapsible collapsed={collapsed} onCollapse={value => setCollapsed(value)}>
                 <Typography.Title level={4} className="pl-3 pt-2">Filters</Typography.Title>
-                {filters && <Collapse 
+                {filters && <Collapse
+                    className="!rounded-none" 
                     items={Object.keys(filters).reverse().map((filterTitle: string) => ({
                         key: filterTitle === 'lowestPrice' ? 'price' : filterTitle,
                         label: !collapsed ? formatCamelCaseToSentence(filterTitle === 'lowestPrice' ? 'price' : filterTitle) : '',

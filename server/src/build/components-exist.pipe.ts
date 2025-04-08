@@ -22,6 +22,7 @@ import {
 export class CreateFullBuildDto {
   name: string;
   price: number;
+  description?: string;
 
   motherBoard?: MotherboardComponent;
   cpu?: CpuComponent;
@@ -44,6 +45,7 @@ export class ComponentsExistPipe implements PipeTransform {
     const fullBuildDto: CreateFullBuildDto = {
       name: buildDto.name,
       price: buildDto.price,
+      description: buildDto.description,
     };
 
     if (buildDto.motherBoardId) {

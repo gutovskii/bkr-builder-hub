@@ -14,6 +14,6 @@ export default function ComponentDetailsPage() {
 
     return <div>
         <LayoutHeader />
-        <ComponentDetails componentType={params.componentType} id={params.id}/>
+        <ComponentDetails componentType={params.componentType} id={params.id} />
     </div>
 }

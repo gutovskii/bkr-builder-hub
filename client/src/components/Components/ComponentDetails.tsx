@@ -1,7 +1,7 @@
 import { capitalizeFirstLetter, formatCamelCaseToSentence } from "@/common/helpers";
 import { componentsService } from "@/services/components.service";
 import { useQuery } from "@tanstack/react-query";
-import { Button, Carousel, Image, Spin, Table, Typography } from "antd";
+import { Button, Carousel, Image, message, Spin, Table, Typography } from "antd";
 import Link from "antd/es/typography/Link";
 
 export default function ComponentDetails({ componentType, id }: {componentType: string, id: string}) {
@@ -30,7 +30,10 @@ export default function ComponentDetails({ componentType, id }: {componentType: 
         } else {
             if (buildCharacterisitics) {
                 const sameComponent = buildCharacterisitics.find((bc: any) => bc.id === data.id);
-                if (sameComponent) return;
+                if (sameComponent) {
+                    message.info('Компонент уже доданий');
+                    return;
+                };
             }
             if (buildCharacterisitics)
                 buildCharacterisitics.push(data);
@@ -39,18 +42,18 @@ export default function ComponentDetails({ componentType, id }: {componentType: 
         }
 
         localStorage.setItem('build', JSON.stringify(parsed));
+
+        message.success('Додано в збірку!');
     }
 
     return query.isLoading ? <Spin /> : <div className="p-10">
         <div>
             <Typography.Title>{query.data.componentUnifiedName}</Typography.Title>
         </div>
-        <div>
-            <Typography.Text>Найнижча ціна: {query.data.lowestPrice} ₴</Typography.Text>
-        </div>
-        <div>
-            <Typography.Text>Гарантія: {query.data.warranty}</Typography.Text>
-        </div>
+        <Typography.Title level={4}>
+            Найнижча ціна: <span className="p-1 rounded-xl bg-blue-300 text-black">{query.data.lowestPrice}</span> ₴
+        </Typography.Title>
+        <div>Гарантія: <strong>{query.data.warranty}</strong></div>
         <div className="flex w-full">
             <div className="w-1/2 max-h-[500px] pr-5">
                 <Carousel arrows>

@@ -52,26 +52,10 @@ model UserEntity {
     savedComponents BaseComponent[]
     savedBuilds BuildEntity[] @relation("SavedBuilds")
     createdBuilds BuildEntity[] @relation("CreatedBuilds")
+    likedBuilds BuildEntity[] @relation("LikedBuilds")
     buildComments BuildComment[]
 
     createdAt DateTime @default(now())
-
-    @@allow('all', true)
-}
-
-model BuildComment {
-    id String @id @default(uuid())
-
-    text String
-    rating Float?
-
-    user UserEntity @relation(fields: [userId], references: [id])
-    userId String
-    build BuildEntity @relation(fields: [buildId], references: [id])
-    buildId String
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime? @updatedAt
 
     @@allow('all', true)
 }
@@ -90,6 +74,7 @@ model BuildEntity {
     userId String
 
     usersSaved UserEntity[] @relation("SavedBuilds")
+    usersLiked UserEntity[] @relation("LikedBuilds")
 
     motherBoard MotherboardComponent? @relation(fields: [motherBoardId], references: [id])
     motherBoardId String?
@@ -106,6 +91,23 @@ model BuildEntity {
     buildComments BuildComment[]
 
     isDeleted Boolean @default(false)
+
+    @@allow('all', true)
+}
+
+model BuildComment {
+    id String @id @default(uuid())
+
+    text String
+    rating Float?
+
+    user UserEntity @relation(fields: [userId], references: [id])
+    userId String
+    build BuildEntity @relation(fields: [buildId], references: [id])
+    buildId String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime? @updatedAt
 
     @@allow('all', true)
 }

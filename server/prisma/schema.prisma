@@ -34,20 +34,9 @@ model UserEntity {
   savedComponents BaseComponent[]
   savedBuilds     BuildEntity[]   @relation("SavedBuilds")
   createdBuilds   BuildEntity[]   @relation("CreatedBuilds")
+  likedBuilds     BuildEntity[]   @relation("LikedBuilds")
   buildComments   BuildComment[]
   createdAt       DateTime        @default(now())
-}
-
-model BuildComment {
-  id        String      @id() @default(uuid())
-  text      String
-  rating    Float?
-  user      UserEntity  @relation(fields: [userId], references: [id])
-  userId    String
-  build     BuildEntity @relation(fields: [buildId], references: [id])
-  buildId   String
-  createdAt DateTime    @default(now())
-  updatedAt DateTime?   @updatedAt()
 }
 
 model BuildEntity {
@@ -61,6 +50,7 @@ model BuildEntity {
   user          UserEntity             @relation("CreatedBuilds", fields: [userId], references: [id])
   userId        String
   usersSaved    UserEntity[]           @relation("SavedBuilds")
+  usersLiked    UserEntity[]           @relation("LikedBuilds")
   motherBoard   MotherboardComponent?  @relation(fields: [motherBoardId], references: [id])
   motherBoardId String?
   cpu           CpuComponent?          @relation(fields: [cpuId], references: [id])
@@ -74,6 +64,18 @@ model BuildEntity {
   cases         CaseComponent[]
   buildComments BuildComment[]
   isDeleted     Boolean                @default(false)
+}
+
+model BuildComment {
+  id        String      @id() @default(uuid())
+  text      String
+  rating    Float?
+  user      UserEntity  @relation(fields: [userId], references: [id])
+  userId    String
+  build     BuildEntity @relation(fields: [buildId], references: [id])
+  buildId   String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime?   @updatedAt()
 }
 
 model ComponentInMarketplaces {

@@ -3,13 +3,13 @@ import { TouchCaseComponentScrapper, TouchCoolerComponentScrapper, TouchCpuCompo
 import { AbstractTouchComponentScrapper } from "./AbstractTouchComponentScrapper";
 
 export const getTouchComponentScrappers = (browser: Browser): AbstractTouchComponentScrapper[] => [
-    // new TouchCpuComponentScrapper(browser),
-    // new TouchCaseComponentScrapper(browser),
-    // new TouchCoolerComponentScrapper(browser),
-    // new TouchHddComponentScrapper(browser),
-    // new TouchMemoryComponentScrapper(browser),
-    // new TouchMotherboardComponentScrapper(browser),
-    // new TouchPowerSupplyComponentScrapper(browser), //*
-    // new TouchSsdComponentScrapper(browser),
+    new TouchCpuComponentScrapper(browser),
+    new TouchCaseComponentScrapper(browser),
+    new TouchCoolerComponentScrapper(browser),
+    new TouchHddComponentScrapper(browser),
+    new TouchMemoryComponentScrapper(browser),
+    new TouchMotherboardComponentScrapper(browser),
+    new TouchPowerSupplyComponentScrapper(browser),
+    new TouchSsdComponentScrapper(browser),
     new TouchVideoCardComponentScrapper(browser),
 ];
