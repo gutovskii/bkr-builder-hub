@@ -14,13 +14,12 @@ datasource db {
 }
 
 type FilterItem {
-    title String
+    title String?
 
     characteristics String[]?
 
     minValue Int?
     maxValue Int?
-    measuring String?
 }
 
 model ComponentsFilters {
@@ -32,32 +31,31 @@ model ComponentsFilters {
     @@allow('all', true)
 }
 
+model BuildsFilters {
+    id String @id @default(uuid())
+    
+    buildsFiltersKey String? @default('BUILDS_FILTER') @unique()
+    filters FilterItem[] @json
+
+    @@allow('all', true)
+}
+
 model UserEntity {
     id String @id @default(uuid())
 
     nickname String @unique
     email String @unique
     isAdmin Boolean @default(false)
+    hashPassword String
+    avatarUrl String
 
     savedComponents BaseComponent[]
-    savedBuilds BuildEntity[]
+    savedBuilds BuildEntity[] @relation("SavedBuilds")
+    createdBuilds BuildEntity[] @relation("CreatedBuilds")
+    likedBuilds BuildEntity[] @relation("LikedBuilds")
     buildComments BuildComment[]
 
     createdAt DateTime @default(now())
-
-    @@allow('all', true)
-}
-
-model BuildComment {
-    id String @id @default(uuid())
-
-    text String
-    rating Float
-
-    user UserEntity @relation(fields: [userId], references: [id])
-    userId String
-    build BuildEntity @relation(fields: [buildId], references: [id])
-    buildId String
 
     @@allow('all', true)
 }
@@ -66,11 +64,17 @@ model BuildEntity {
     id String @id @default(uuid())
 
     name String
+    price Float
+    description String?
     rating Float @default(0)
     likes Int @default(0)
+    imgsUrls String[]
 
-    user UserEntity @relation(fields: [userId], references: [id])
+    user UserEntity @relation("CreatedBuilds", fields: [userId], references: [id])
     userId String
+
+    usersSaved UserEntity[] @relation("SavedBuilds")
+    usersLiked UserEntity[] @relation("LikedBuilds")
 
     motherBoard MotherboardComponent? @relation(fields: [motherBoardId], references: [id])
     motherBoardId String?
@@ -85,6 +89,25 @@ model BuildEntity {
     cases CaseComponent[]
 
     buildComments BuildComment[]
+
+    isDeleted Boolean @default(false)
+
+    @@allow('all', true)
+}
+
+model BuildComment {
+    id String @id @default(uuid())
+
+    text String
+    rating Float?
+
+    user UserEntity @relation(fields: [userId], references: [id])
+    userId String
+    build BuildEntity @relation(fields: [buildId], references: [id])
+    buildId String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime? @updatedAt
 
     @@allow('all', true)
 }

@@ -18,33 +18,39 @@ model ComponentsFilters {
   filters       Json
 }
 
+model BuildsFilters {
+  id               String  @id() @default(uuid())
+  buildsFiltersKey String? @unique() @default("BUILDS_FILTER")
+  filters          Json
+}
+
 model UserEntity {
   id              String          @id() @default(uuid())
   nickname        String          @unique()
   email           String          @unique()
   isAdmin         Boolean         @default(false)
+  hashPassword    String
+  avatarUrl       String
   savedComponents BaseComponent[]
-  savedBuilds     BuildEntity[]
+  savedBuilds     BuildEntity[]   @relation("SavedBuilds")
+  createdBuilds   BuildEntity[]   @relation("CreatedBuilds")
+  likedBuilds     BuildEntity[]   @relation("LikedBuilds")
   buildComments   BuildComment[]
-}
-
-model BuildComment {
-  id      String      @id() @default(uuid())
-  text    String
-  rating  Float
-  user    UserEntity  @relation(fields: [userId], references: [id])
-  userId  String
-  build   BuildEntity @relation(fields: [buildId], references: [id])
-  buildId String
+  createdAt       DateTime        @default(now())
 }
 
 model BuildEntity {
   id            String                 @id() @default(uuid())
   name          String
+  price         Float
+  description   String?
   rating        Float                  @default(0)
   likes         Int                    @default(0)
-  user          UserEntity             @relation(fields: [userId], references: [id])
+  imgsUrls      String[]
+  user          UserEntity             @relation("CreatedBuilds", fields: [userId], references: [id])
   userId        String
+  usersSaved    UserEntity[]           @relation("SavedBuilds")
+  usersLiked    UserEntity[]           @relation("LikedBuilds")
   motherBoard   MotherboardComponent?  @relation(fields: [motherBoardId], references: [id])
   motherBoardId String?
   cpu           CpuComponent?          @relation(fields: [cpuId], references: [id])
@@ -57,6 +63,19 @@ model BuildEntity {
   powerSupplies PowerSupplyComponent[]
   cases         CaseComponent[]
   buildComments BuildComment[]
+  isDeleted     Boolean                @default(false)
+}
+
+model BuildComment {
+  id        String      @id() @default(uuid())
+  text      String
+  rating    Float?
+  user      UserEntity  @relation(fields: [userId], references: [id])
+  userId    String
+  build     BuildEntity @relation(fields: [buildId], references: [id])
+  buildId   String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime?   @updatedAt()
 }
 
 model ComponentInMarketplaces {

@@ -7,9 +7,9 @@ async function main() {
     const browser = await puppeteer.launch({ timeout: 0 });
 
     const marketplacesScrappers: AbstractMarketplacesScrapper[] = [
-        // new ZhukScrapper(browser),
-        // new TouchScrapper(browser),
-        new ItboxScrapper(browser),
+        new ZhukScrapper(browser),
+        new TouchScrapper(browser),
+        // new ItboxScrapper(browser),
     ];
 
     const builderHubScrapper = new BuilderHubScrapper(marketplacesScrappers);

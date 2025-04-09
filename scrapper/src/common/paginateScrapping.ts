@@ -49,7 +49,7 @@ export async function paginateScrapping<
     const listPage = await browser.newPage();
     const itemPage = await browser.newPage();
 
-    let pageNumber = 2;
+    let pageNumber = 1;
     let hasNext = true;
 
     while (hasNext) {

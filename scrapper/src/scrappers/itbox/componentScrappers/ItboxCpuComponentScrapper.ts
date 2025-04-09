@@ -3,7 +3,6 @@ import { paginateScrapping } from "../../../common/paginateScrapping";
 import { getItboxPaginationConfig } from "../getItboxPaginationConfig";
 import { AbstractItboxComponentScrapper } from "../AbstractItboxComponentScrapper";
 
-// todo
 export class ItboxCpuComponentScrapper 
     extends AbstractItboxComponentScrapper {
     
