@@ -1,14 +1,14 @@
 import puppeteer from "puppeteer";
-import { AbstractMarketplacesScrapper, BuilderHubScrapper, ItboxScrapper, TouchScrapper, ZhukScrapper } from "./scrappers";
+import { AbstractMarketplaceScrapper, BuilderHubScrapper, ItboxScrapper, TouchScrapper, ZhukScrapper } from "./scrappers";
 
 export const MARKETPLACES_COUNT = 3;
 
 async function main() {
     const browser = await puppeteer.launch({ timeout: 0 });
 
-    const marketplacesScrappers: AbstractMarketplacesScrapper[] = [
-        new ZhukScrapper(browser),
+    const marketplacesScrappers: AbstractMarketplaceScrapper[] = [
         new TouchScrapper(browser),
+        // new ZhukScrapper(browser),
         // new ItboxScrapper(browser),
     ];
 

@@ -1,5 +1,5 @@
 export * from './BuilderHubScrapper';
-export * from './AbstractMarketplacesScrapper';
+export * from './AbstractMarketplaceScrapper';
 export * from './AbstractComponentScrapper';
 
 export * from './touch';

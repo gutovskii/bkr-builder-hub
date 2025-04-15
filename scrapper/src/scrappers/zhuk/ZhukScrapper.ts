@@ -1,8 +1,8 @@
 import { Browser } from "puppeteer";
-import { AbstractMarketplacesScrapper } from "../AbstractMarketplacesScrapper";
+import { AbstractMarketplaceScrapper } from "../AbstractMarketplaceScrapper";
 import { getZhukComponentScrappers } from "./getZhukComponentScrappers";
 
-export class ZhukScrapper extends AbstractMarketplacesScrapper {
+export class ZhukScrapper extends AbstractMarketplaceScrapper {
     protected componentScrappers = getZhukComponentScrappers(this.browser);
     
     constructor(private readonly browser: Browser) {

@@ -48,29 +48,32 @@ export default function ComponentItem({data}: any) {
     }
 
     return <div className="w-1/2 md:w-1/3 lg:w-1/5 flex flex-col pb-2" title={data.componentUnifiedName}>
-        <Card
-            hoverable
-            className="w-[95%] min-h-[350px]"
-            cover={data.imgUrls[0] ? <div className="!flex justify-center"><Image height={150} src={data.imgUrls[0]} /></div> : <Image height={150} preview={false} src={NO_IMAGE_SRC} />}
-            actions={getActions()}
-        >
-            <Link to="/components/$componentType/$id" params={{componentType: params.componentType, id: data.id}}>
-                <Card.Meta
-                    title={data.componentUnifiedName}
-                    description={
-                        <>
-                            <div className="min-h-[75px]">
-                                <div>
-                                    Найнижча ціна: <Typography.Text>{data.lowestPrice} ₴</Typography.Text>
+        <Link to="/components/$componentType/$id" params={{componentType: params.componentType, id: data.id}}>
+            <Card
+                hoverable
+                className="w-[95%] min-h-[350px]"
+                cover={data.imgUrls[0] 
+                    ? <div className="!flex justify-center"><Image height={150} src={data.imgUrls[0]} preview={false} /></div> 
+                    : <Image height={150} preview={false} src={NO_IMAGE_SRC} />}
+                actions={getActions()}
+            >
+                
+                    <Card.Meta
+                        title={data.componentUnifiedName}
+                        description={
+                            <>
+                                <div className="min-h-[75px]">
+                                    <div>
+                                        Найнижча ціна: <Typography.Text>{data.lowestPrice} ₴</Typography.Text>
+                                    </div>
+                                    <div>
+                                        Гарантія: <Typography.Text>{data.warranty}</Typography.Text>
+                                    </div>
                                 </div>
-                                <div>
-                                    Гарантія: <Typography.Text>{data.warranty}</Typography.Text>
-                                </div>
-                            </div>
-                        </>
-                    }
-                />
-            </Link>
-        </Card>
+                            </>
+                        }
+                    />
+            </Card>
+        </Link>
     </div>;
 }

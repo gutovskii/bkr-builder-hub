@@ -1,6 +1,6 @@
 import { AbstractComponentScrapper } from "./AbstractComponentScrapper";
 
-export abstract class AbstractMarketplacesScrapper {
+export abstract class AbstractMarketplaceScrapper {
     protected abstract componentScrappers: AbstractComponentScrapper[];
     public abstract scrapMarketplace(): Promise<void>;
 }

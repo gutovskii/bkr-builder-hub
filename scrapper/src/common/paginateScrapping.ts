@@ -168,6 +168,7 @@ export async function paginateScrapping<
                             componentType: createdUnifiedData.componentType,
                             filters: Object.entries(({ 
                                 ...JSON.parse(scrappedComponent.jsonCharacteristics), 
+                                price: scrappedComponent.price,
                             } as Record<string, string | number>))
                                 .map(([key, value]) => {
                                     if (typeof value === 'string') {
