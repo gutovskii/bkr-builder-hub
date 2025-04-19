@@ -3,6 +3,15 @@ import { componentsService } from "@/services/components.service";
 import { useQuery } from "@tanstack/react-query";
 import { Button, Carousel, Image, message, Spin, Table, Typography } from "antd";
 import Link from "antd/es/typography/Link";
+import TouchImg from '../../images/marketplacesLogos/touch.webp';
+import ZhukImg from '../../images/marketplacesLogos/zhuk.png';
+import ItboxImg from '../../images/marketplacesLogos/itbox.jpg';
+
+const marketplaceNameToLogoConfig = {
+    Touch: TouchImg,
+    Zhuk: ZhukImg,
+    ITbox: ItboxImg,
+}
 
 export default function ComponentDetails({ componentType, id }: {componentType: string, id: string}) {
     const query = useQuery({
@@ -59,7 +68,7 @@ export default function ComponentDetails({ componentType, id }: {componentType: 
                 <Carousel arrows>
                     {query.data.imgUrls.map((imgUrl: string) => (
                         <div>
-                            <Image height={350} src={imgUrl} preview={false} />
+                            <Image height={350} src={imgUrl} />
                         </div>
                     ))}
                 </Carousel>
@@ -67,12 +76,16 @@ export default function ComponentDetails({ componentType, id }: {componentType: 
             <div className="w-1/2">
                 <Typography.Title level={4}>Компоненти в магазинах</Typography.Title>
                 {query.data.marketplacesComponents.map((mc: any) => (
-                    <div key={mc.id} className="flex gap-2">
+                    <div key={mc.id} className="flex items-center gap-2">
+                        <div>
+                            <Image height={75} src={marketplaceNameToLogoConfig[mc.marketplaceName as keyof typeof marketplaceNameToLogoConfig]} preview={false} />
+                        </div>
                         <div>
                             <Link href={mc.URL}><div>{mc.componentUnifiedName}</div></Link>
                             <div>{mc.price} ₴</div>
                         </div>
-                        <div>
+                        <div className="flex flex-col gap-1">
+                            <Button type="primary"><a href={mc.URL} className="text-black">Купити</a></Button>
                             <Button onClick={() => addToBuild(mc)}>Додати в збірку</Button>
                         </div>
                     </div>

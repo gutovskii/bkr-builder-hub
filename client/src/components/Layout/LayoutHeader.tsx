@@ -75,7 +75,7 @@ const userDropdownItems: MenuProps['items'] = [
     {
         key: 4,
         icon: <LogoutOutlined />,
-        label: 'Logout',
+        label: 'Вихід',
         danger: true,
         onClick: () => authService.logout(),
     }

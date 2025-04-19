@@ -14,7 +14,7 @@ export const componentTypeToUkranian = (componentType: string) => {
     return {
         cpuComponent: 'Процесори',
         motherboardComponent: 'Материнські плати',
-        ssdComponent: 'ССД диски',
+        ssdComponent: 'ССД Накопичувачі',
         hddComponent: 'Жорсткі диски',
         memoryComponent: 'Оперативна пам\'ять',
         powerSupplyComponent: 'Джерела живлення',

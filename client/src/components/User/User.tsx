@@ -18,15 +18,15 @@ export default function User({ nickname }: { nickname: string }) {
                 <div className="w-full md:w-1/4">
                     <div className="p-4 m-2 flex flex-col items-center justify-center rounded-2xl bg-indigo-200">
                         <div className="flex flex-col justify-center gap-2">
-                            <div>
+                            <div className="flex justify-center">
                                 <Avatar size={80} src={query.data.avatarUrl} />
                             </div>
                             <div>
                                 <p className="font-bold text-center text-2xl">{query.data.nickname}</p>
                             </div>
-                        </div>
-                        <div>
-                            {query.data.createdAt && <Typography.Text>Доєднався: {query.data.createdAt}</Typography.Text>}
+                            <div className="text-center">
+                                {query.data.createdAt && <Typography.Text>Доєднався: {query.data.createdAt}</Typography.Text>}
+                            </div>
                         </div>
                     </div>
                 </div>

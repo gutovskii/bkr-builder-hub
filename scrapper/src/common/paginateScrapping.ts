@@ -190,6 +190,7 @@ export async function paginateScrapping<
                     const existingFilters = componentFilter.filters;
                     const newComponentCharacteristic = {
                         ...JSON.parse(scrappedComponent.jsonCharacteristics),
+                        lowestPrice: scrappedComponent.price,
                     } as Record<string, string | number>;
 
                     Object.entries(newComponentCharacteristic).map(([key, value]) => {

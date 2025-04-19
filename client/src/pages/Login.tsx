@@ -28,7 +28,7 @@ export default function Login() {
         },
         onSuccess(data) {
             setUser(data);
-            navigate({ to: '/components/$componentType', params: {componentType: 'cpuComponent'} }); // todo
+            navigate({ to: '/components' });
         },
         onError(error: AxiosError<NestError>) {
             message.error(error.response?.data.message, 3);

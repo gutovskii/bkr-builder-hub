@@ -161,7 +161,6 @@ export default function BuildDetails() {
                     </Carousel>
                 </div>
                 {findBuildQuery.data.description && <div>
-                    <Typography.Title level={4}>Опис</Typography.Title>
                     <div className="p-3">
                         <MDEditor.Markdown className="!bg-[#f5f5f5]" source={findBuildQuery.data.description} />
                     </div>

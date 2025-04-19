@@ -8,8 +8,8 @@ async function main() {
 
     const marketplacesScrappers: AbstractMarketplaceScrapper[] = [
         new TouchScrapper(browser),
-        // new ZhukScrapper(browser),
-        // new ItboxScrapper(browser),
+        new ZhukScrapper(browser),
+        new ItboxScrapper(browser),
     ];
 
     const builderHubScrapper = new BuilderHubScrapper(marketplacesScrappers);

@@ -8,8 +8,8 @@ export const getTouchComponentScrappers = (browser: Browser): AbstractTouchCompo
     new TouchCoolerComponentScrapper(browser),
     new TouchHddComponentScrapper(browser),
     new TouchMemoryComponentScrapper(browser),
-    // new TouchMotherboardComponentScrapper(browser),
-    // new TouchPowerSupplyComponentScrapper(browser),
-    // new TouchSsdComponentScrapper(browser),
-    // new TouchVideoCardComponentScrapper(browser),
+    new TouchMotherboardComponentScrapper(browser),
+    new TouchPowerSupplyComponentScrapper(browser),
+    new TouchSsdComponentScrapper(browser),
+    new TouchVideoCardComponentScrapper(browser),
 ];

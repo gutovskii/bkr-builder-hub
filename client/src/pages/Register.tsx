@@ -37,7 +37,7 @@ export default function Register() {
         },
         onSuccess(data) {
             setUser(data);
-            navigate({ to: '/components/$componentType', params: {componentType: 'cpuComponent'} });
+            navigate({ to: '/components' });
         },
         onError(error) {
             message.error(error.message);
